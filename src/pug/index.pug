@@ -1,0 +1,63 @@
+//-include ./comps/AppBar.pug
+//-include ./comps/movType.pug
+//-include ./comps/QPopup.pug
+//-include ./comps/QResult.pug
+//-include ./comps/QPopupHint.pug
+
+doctype html
+html
+    include ./comps/header.pug
+    body 
+        span#debug
+        .app
+            //-include ./comps/landscape.pug
+            header
+                img(src="./img/logo.svg")
+            .app.portrait
+                #myArtical
+                    | Howdy folks! It's time yet again for another edition of The Power of Pauper! I'm your host, Joe Dyer, and this week we're back to the Pauper column to see what's happening with Pauper as of late. We took a bit of a break from this column for a bit just because a lot of other stuff was going on with my other columns (Eternal Weekend NA was a big week for me), but now we're back! We've also got some Challenges to discuss from this past weekend which will help us get an idea of what's happening with the format.
+                    | Without further ado, let's dive right in!
+                    | The Current Happenings of Pauper
+                    | It has been a hot minute since we had an article focused on the current Pauper metagame and just general vibe checks on how Pauper is looking lately. Let's start by checking out the Top 10 decks in metagame share that we're seeing on MTGGoldfish.
+                    | For the most part, the format seems like it hasn't really shifted all that much in a while, and honestly that's sort of fine? There hasn't been a bunch of huge shakeups really, and not only that the deck that I think most folks were wondering about seems to have settled well and that is Broodscale Combo.
+                    | Basking BroodscaleBasking Broodscale [MH3]
+                    | Sadistic GleeSadistic Glee [TE]
+                    | I think there were a lot of immediate concerns about this deck in general. Comparisons to things like Splinter Twin are there, and yes the deck does have a very raw power level that it broke through the format to become one of the Top 10 decks of the format, but in general it seems like the format has had a lot of chances to adapt to the deck and has found ways to combat it. As most combo decks in Pauper, it's a deck that relies on a creature to do the combo, so that in of itself presents a challenge to the format that is already hyper focused on having ways of dealing with creatures.
+                    | The other thing here is that the deck does have to pull together two different cards in a deck that can draw cards but not easily tutor for either half and sometimes the deck is slow at piecing this together while an aggressive deck can take them down before they get a chance to do their thing.
+                    | Burn and Affinity still seem to be at the top of the metagame here, but realistically I have really only seen one or two Burn lists in most Top 8s in general, sometimes not even at all. The deck is pretty hyper focused and there are a bunch of ways to interact with it, so I don't really believe it's a huge issue right now. Same with Affinity. While Refurbished Familiar seemed quite huge, it didn't really push the deck as hard as something like Cranial Ram would have from MH3.
+                    | The rest of this looks nicely varied and interesting. There's a lot of different aspects of decks that fit traditional Aggro/Midrange/Control/Combo archetypes, and they all seem to pillar back and forth with each other. It's a solid place for a metagame to be. I do think it is worth keeping an eye on one singular card and it's really only mainly because of how homogenizing it is to deckbuilding in decks it goes in, and that's Writhing Chrysalis.
+                    | Writhing ChrysalisWrithing Chrysalis [MH3]
+                    | I do think this is certainly an exceptionally powerful card, one of the best commons from MH3, and does have a very strong effect on deckbuilding within Red/Green decks but also decks that can splash into either color easily. I don't think it's generally worth a ban right now, but it is a card that could move quickly to the top of the format on sheer power level if something did come along that busted it open.
+                    | Regardless, I find that Pauper is in a reasonably healthy spot right now. The games look varied and fun, and there really is a lot more than just these ten decks, and so much more that is able to do well in an event.
+                    | Innistrad Remastered on the Horizon
+                    | Another set much like Ravnica Remastered is on the way and being actively spoiled, this time being Innistrad Remastered. These sets generally always have some number of downshifts and also some great reprints (for those who like to bling out their decks), so I definitely recommend keeping an eye out. We'll be covering any new downshifts if there are any once the set is fully spoiled!
+                    | Pauper Challenge 32 11/29
+                    | The first Challenge event of the weekend was the Friday event. This event had 40 players in it thanks to the MTGO website. There was no data for this event.
+                    | You can find all of the decklists for this event here. The Top 8 is below. 
+                    |
+                    |
+                    |
+                    | test-A
+                    | test.B
+                div
+                    input#keyword(placeholder="Search your key world")
+                    button#Search Search!
+                    .btns
+                //-+AppBar
+                //-+QPopup
+                //首頁
+                //-+QResult
+                //列表
+                //-include ./comps/list.pug
+                //-+movType
+                //播放器 
+                //-include ./comps/count.pug
+                //-include ./comps/player.pug
+                //結束畫面
+                //-include ./comps/end.pug
+            //-include ./comps/loading.pug
+    script.
+        const resultPath = "./js/resultPath.json"
+        const savePath = "./js/savePath.json"
+        const imgPath = "./img/"
+        const deepLink = "https://cathay.app.link/vTw2nKudkab?router=/challenge/CogGame&task_no=TK_20231001168168168Mo8"

@@ -1,0 +1,58 @@
+@use "sass:math"
+
+
+$imgPath:"../img/"
+
+
+@mixin flexBox($row, $col)
+    display: flex
+    justify-content: $row
+    align-items: $col
+
+@mixin fadeInAmin()
+    animation-name: fadeInAmin
+    animation-duration: .8s
+    @keyframes fadeInAmin
+        0% 
+            opacity: 0
+        100% 
+            opacity: 1
+
+html,body
+    height: 100%
+body
+    margin: 0
+    padding: 0
+    
+    background: rgb(156,225,238)
+    background: linear-gradient(0deg, rgba(156,225,238,1) 0%, rgba(0,152,240,1) 100%)
+
+.app
+    width: calc(100% - 30px)
+    max-width: 1615px
+    padding: 15px
+    margin: 0 auto
+    display: flex
+    justify-content: center
+    flex-direction: column
+    header
+        width: 100%
+           
+    .portrait
+        display: flex
+        align-items: flex-start
+        background-color: white
+        
+        #myArtical
+            white-space: pre-line
+            overflow-y: auto
+            width:  500px
+            height: 500px
+            .high
+                background-color: red
+                color: white
+            .focus
+                background-color: blue
+
+        .btns
+            width: 500px
