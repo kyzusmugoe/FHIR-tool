@@ -1,19 +1,9 @@
 {
     "case":"4028",
-    "icd10":[
-        { "code":"", "codename":"", "spantxt":"", "confidence":1, "check":0},
-        { "code":"", "codename":"", "spantxt":"", "confidence":1, "check":0}
-    ],
-    "snomedct":[
-        { "code":"", "codename":"", "spantxt":"", "confidence":1, "check":0},
-        { "code":"", "codename":"", "spantxt":"", "confidence":1, "check":0}
-    ],
-    "rxnorm":[
-        { "code":"", "codename":"", "spantxt":"", "confidence":1, "check":0},
-        { "code":"", "codename":"", "spantxt":"", "confidence":1, "check":0}
-    ],
-    "lonic":[
-        { "code":"", "codename":"", "spantxt":"", "confidence":1, "check":0},
-        { "code":"", "codename":"", "spantxt":"", "confidence":1, "check":0}
+    "codelist":[
+        {"source":" icd10", "code":"代碼", "codename":"名稱", "spantxt":"關鍵字", "confidence":1, "check":0},
+        {"source":" snomedct ", "code":"代碼", "codename":"名稱", "spantxt":"關鍵字", "confidence":1, "check":0},
+        {"source":" rxnorm ", "code":"代碼", "codename":"名稱", "spantxt":"關鍵字", "confidence":1, "check":0},
+        {"source":" lonic ", "code":"代碼", "codename":"名稱", "spantxt":"關鍵字", "confidence":1, "check":0}
     ]
 }
