@@ -1,7 +1,8 @@
 @use "sass:math"
-
+@use "./components" as components
 
 $imgPath:"../img/"
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Noto+Sans+TC:wght@100;300;400;500;700;900&display=swap')
 
 
 @mixin flexBox($row, $col)
@@ -27,7 +28,9 @@ body
     background: rgb(156,225,238)
     background: linear-gradient(0deg, rgba(156,225,238,1) 0%, rgba(0,152,240,1) 100%)
 
+
 .app
+    @include components.switch()
     width: calc(100% - 30px)
     max-width: 1615px
     padding: 15px
@@ -35,6 +38,7 @@ body
     display: flex
     justify-content: center
     flex-direction: column
+   
     header
         width: 100%
            
@@ -48,11 +52,17 @@ body
             overflow-y: auto
             width:  500px
             height: 500px
-            .high
-                background-color: red
-                color: white
-            .focus
-                background-color: blue
+            
+            .header
+                display: flex
+                justify-content: flex-end
+
+            .content
+                .high
+                    background-color: red
+                    color: white
+                .focus
+                    background-color: blue
 
         .btns
             width: 500px

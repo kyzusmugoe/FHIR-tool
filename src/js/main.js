@@ -22,6 +22,34 @@
         })
     }
 
+    const contentLoader = (path, params) => {
+        let formData = new FormData();
+        if(params){
+
+            params.forEach(item=>{
+                formData.append(item.key, item.value);
+            })
+        }
+
+        return new Promise((resolve, reject) => {
+            fetch(path, {
+                method: 'GET',
+                //body: formData
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    console.log("連線失敗");
+                    return null;
+                }
+            }).then(result => {
+                resolve(result)
+            }).catch(error => {
+                console.error(error);
+            })
+        })
+    }
+
     const doSearch = () => {
         document.querySelector("#myArtical").innerHTML = org
         let keyword = document.querySelector("#keyword").value;
@@ -58,15 +86,59 @@
         }
     }
 
+    
+
     //init
     document.addEventListener("DOMContentLoaded",()=>{
         loadConfig().then(res => {
             API_URL = res.API_URL
-
             //search 
             document.querySelector("#Search").addEventListener("click", () => {
                 doSearch()
             })
+            return contentLoader("./js/GetCaseContent.json")
+        }).then(artical=>{
+            let sw = true;
+            const changeArtical =(lang)=>{
+                if(lang=="CHT"){
+                    document.querySelector("#myArtical .content").innerHTML = artical.CHT
+                }else{
+                    document.querySelector("#myArtical .content").innerHTML = artical.ENG
+                }
+            }
+            changeArtical(sw?"CHT":"ENG")
+            document.querySelector("#myArtical .switch input").addEventListener("click", e => {
+                sw = !sw
+                changeArtical(sw?"CHT":"ENG")
+            })
+            
+            return contentLoader("./js/GetCaseDetail.json")
+        }).then(items=>{
+            const dataPool={}
+            items.codelist.map(item=>{
+                //console.log(item)
+                if(dataPool[item.source] == undefined){
+                    dataPool[item.source] = []
+                }
+                dataPool[item.source].push(item)
+            
+            })
+
+            const renderRow = ()=>{
+                
+            }
+
+            const tabBox = document.querySelector("#codeCtrl .tabs")
+            for(let key in dataPool )
+            {
+                const btn = document.createElement('button')
+                btn.innerHTML = key
+                tabBox.appendChild(btn)
+                console.log(key)
+            }
+
+            //dataPool.map()
+            
         })
     })
 
