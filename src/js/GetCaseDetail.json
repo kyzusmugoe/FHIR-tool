@@ -1,16 +1,16 @@
 {
     "case":"4028",
     "codelist":[
-        {"source":"icd10", "code":"代碼1", "codename":"名稱1", "spantxt":"關鍵字1", "confidence":1, "check":0},
-        {"source":"snomedct", "code":"代碼2", "codename":"名稱2", "spantxt":"關鍵字2", "confidence":1, "check":0},
-        {"source":"rxnorm", "code":"代碼3", "codename":"名稱3", "spantxt":"關鍵字3", "confidence":1, "check":0},
-        {"source":"lonic", "code":"代碼4", "codename":"名稱4", "spantxt":"關鍵字4", "confidence":1, "check":0},
-        {"source":"icd10", "code":"代碼5", "codename":"名稱5", "spantxt":"關鍵字5", "confidence":1, "check":0},
-        {"source":"snomedct", "code":"代碼6", "codename":"名稱6", "spantxt":"關鍵字6", "confidence":1, "check":0},
-        {"source":"rxnorm", "code":"代碼7", "codename":"名稱7", "spantxt":"關鍵字7", "confidence":1, "check":0},
-        {"source":"lonic", "code":"代碼8", "codename":"名稱8", "spantxt":"關鍵字8", "confidence":1, "check":0},
-        {"source":"rxnorm", "code":"代碼9", "codename":"名稱9", "spantxt":"關鍵字9", "confidence":1, "check":0},
-        {"source":"lonic", "code":"代碼10", "codename":"名稱10", "spantxt":"關鍵字10", "confidence":1, "check":0},
-        {"source":"icd10", "code":"代碼11", "codename":"名稱11", "spantxt":"關鍵字11", "confidence":1, "check":0}
+        {"source":"icd10", "code":"代碼1", "codename":"名稱1", "spantxt":"Presentillness", "confidence":1, "check":0},
+        {"source":"snomedct", "code":"代碼2", "codename":"名稱2", "spantxt":"Temperature", "confidence":1, "check":0},
+        {"source":"rxnorm", "code":"代碼3", "codename":"名稱3", "spantxt":"Rate", "confidence":1, "check":0},
+        {"source":"lonic", "code":"代碼4", "codename":"名稱4", "spantxt":"Symmetric", "confidence":1, "check":0},
+        {"source":"icd10", "code":"代碼5", "codename":"名稱5", "spantxt":"Pressure", "confidence":1, "check":0},
+        {"source":"snomedct", "code":"代碼6", "codename":"名稱6", "spantxt":"side ", "confidence":1, "check":0},
+        {"source":"rxnorm", "code":"代碼7", "codename":"名稱7", "spantxt":"eye", "confidence":1, "check":0},
+        {"source":"lonic", "code":"代碼8", "codename":"名稱8", "spantxt":"Supple", "confidence":1, "check":0},
+        {"source":"rxnorm", "code":"代碼9", "codename":"名稱9", "spantxt":"Retinal", "confidence":1, "check":0},
+        {"source":"lonic", "code":"代碼10", "codename":"名稱10", "spantxt":"Heart", "confidence":1, "check":0},
+        {"source":"icd10", "code":"代碼11", "codename":"名稱11", "spantxt":"Neck", "confidence":1, "check":0}
     ]
 }

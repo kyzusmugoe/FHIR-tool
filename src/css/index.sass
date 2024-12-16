@@ -42,7 +42,7 @@ body
     header
         width: 100%
            
-    .portrait
+    .landscape
         display: flex
         align-items: flex-start
         background-color: white
@@ -50,7 +50,8 @@ body
         #myArtical
             white-space: pre-line
             overflow-y: auto
-            width:  500px
+            width:  100%
+            max-width: 500px
             height: 500px
             
             .header
@@ -58,11 +59,20 @@ body
                 justify-content: flex-end
 
             .content
+                .mark
+                    background-color: yellow
                 .high
                     background-color: red
                     color: white
                 .focus
                     background-color: blue
-
+        #codeCtrl
+            color:#006
+        #codeRow
+            td
+                vertical-align: top
+            .spanTxtBox
+                display: flex
+                flex-direction: column
         .btns
             width: 500px

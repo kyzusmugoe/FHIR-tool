@@ -1,8 +1,15 @@
 (() => {
     let API_URL;
-    const org = document.querySelector("#myArtical").innerHTML;
+    let org;//文章原始文
     const PID = new URL(window.location.href).searchParams.get('pid');
     
+    const cleanContainer = (target) => {
+        const container = document.querySelector(target)
+        while (container.firstChild) {
+            container.removeChild(container.lastChild)
+        }
+    }
+
     const loadConfig = () => {
         return new Promise((resolve, reject) => {
             fetch("./js/config.json", {
@@ -50,20 +57,31 @@
         })
     }
 
-    const doSearch = () => {
-        document.querySelector("#myArtical").innerHTML = org
-        let keyword = document.querySelector("#keyword").value;
-        let artical = document.querySelector("#myArtical").innerHTML;
-        if (keyword == undefined || keyword == "") {
-            console.log("您尚未輸入關鍵字。")
-            return
-        }
+    const findBtns=(keyword)=>{
+        const content =document.querySelector("#myArtical .content")
+        content.innerHTML = org
+        let reg = new RegExp(keyword, 'g');
+        let artical = content.innerHTML;
+        return [...artical.matchAll(reg)]
+    }
+
+    const doSearch = (keyword, index) => {
+        const content =document.querySelector("#myArtical .content")
+        content.innerHTML = org
+        //let keyword = document.querySelector("#keyword").value;
+        let artical = content.innerHTML;
+       
         let reg = new RegExp(keyword, 'i');
         if (artical.match(reg)) {
-            cleanBtnBox()
-            const _a = document.querySelector("#myArtical")
-            _a.innerHTML = artical.replaceAll(keyword, '<span class="high">' + keyword + '</span>')
-            _a.querySelectorAll(".high").forEach(item => {
+            //cleanContainer(".btns")
+            content.innerHTML = artical.replaceAll(keyword, '<span class="mark">' + keyword + '</span>')
+            content.querySelectorAll(".mark").forEach((item, _i) => {
+                if(_i == index){
+                    item.classList.add("high")
+                    const itemY = item.getBoundingClientRect().y - 10
+                    content.scrollTop = itemY
+                }
+                /*
                 btn = document.createElement("button")
                 btn.innerHTML = keyword
                 document.querySelector(".btns").appendChild(btn)
@@ -75,16 +93,13 @@
                     item.classList.add("focus")
                     _a.scrollTop = itemY
                 })
+                */
             })
+
         }
     }
 
-    const cleanBtnBox = () => {
-        const container = document.querySelector(".btns")
-        while (container.firstChild) {
-            container.removeChild(container.lastChild)
-        }
-    }
+
 
     
 
@@ -92,24 +107,22 @@
     document.addEventListener("DOMContentLoaded",()=>{
         loadConfig().then(res => {
             API_URL = res.API_URL
-            //search 
-            document.querySelector("#Search").addEventListener("click", () => {
-                doSearch()
-            })
             return contentLoader("./js/GetCaseContent.json")
         }).then(artical=>{
             let sw = true;
             const changeArtical =(lang)=>{
                 if(lang=="CHT"){
                     document.querySelector("#myArtical .content").innerHTML = artical.CHT
+                    org=artical.CHT
                 }else{
                     document.querySelector("#myArtical .content").innerHTML = artical.ENG
+                    org=artical.ENG
                 }
             }
-            changeArtical(sw?"CHT":"ENG")
+            changeArtical(sw?"ENG":"CHT")
             document.querySelector("#myArtical .switch input").addEventListener("click", e => {
                 sw = !sw
-                changeArtical(sw?"CHT":"ENG")
+                changeArtical(sw?"ENG":"CHT")
             })
             
             return contentLoader("./js/GetCaseDetail.json")
@@ -124,18 +137,54 @@
             
             })
 
-            const renderRow = ()=>{
-                
+            const renderRow = (data)=>{
+                const box = document.querySelector("#codeRow")
+                cleanContainer("#codeRow")
+                data.map(item=>{
+                    const tr = document.createElement("tr");
+                    //console.log(item)
+                    for(let key in item)
+                    {
+                        const td = document.createElement("td");
+                        td.classList.add(key)
+                        switch(key){
+                            case "spantxt":
+                                const box = document.createElement("div");
+                                box.classList.add("spanTxtBox")
+                                findBtns(item[key]).map((val, index)=>{
+                                    const btn = document.createElement("button");
+                                    btn.innerHTML = item[key]
+                                    btn.addEventListener("click",()=>{
+
+                                        doSearch(item[key], index)
+                                    })
+                                    box.appendChild(btn)
+                                })
+                                td.appendChild(box)
+                                break
+                            default:
+                                td.innerHTML = item[key]
+                        }
+                        tr.appendChild(td)
+                    }
+                    box.appendChild(tr)
+                })
             }
 
             const tabBox = document.querySelector("#codeCtrl .tabs")
+
             for(let key in dataPool )
             {
                 const btn = document.createElement('button')
                 btn.innerHTML = key
+                btn.addEventListener('click', ()=>{
+                    renderRow(dataPool[key])
+                    
+                })
                 tabBox.appendChild(btn)
-                console.log(key)
+                
             }
+            renderRow(dataPool['icd10'])
 
             //dataPool.map()
             

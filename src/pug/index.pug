@@ -13,7 +13,7 @@ html
             //-include ./comps/landscape.pug
             header
                 img(src="./img/logo.svg")
-            .app.portrait
+            .landscape
                 #myArtical
                     .header
                         label.switch
@@ -24,9 +24,11 @@ html
                     .tabs
                     .content
                         table
-
-                    input#keyword(placeholder="Search your key world")
-                    button#Search Search!
+                            thead 
+                                tr 
+                                    th
+                            tbody#codeRow
+                            
                     .btns
                 //-+AppBar
                 //-+QPopup
