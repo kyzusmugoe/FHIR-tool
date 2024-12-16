@@ -12,10 +12,25 @@ html
         .app
             //-include ./comps/landscape.pug
             header
-                img(src="./img/logo.svg")
-            .landscape
+                div
+                    img(src="./img/logo.svg")
+                div
+                    span Project 951e7f53-4eea-4abe-9298-0afbc984f508
+            .nav 
+                div
+                    button 選擇病例
+                    span Case: ec36 
+                    button 下一筆
+                div
+                    span 正確 22
+                    span 錯誤 3
+                    span 未完成
+                    button 完成送出
+
+            .panelContainer
                 #myArtical
                     .header
+                        | 原文
                         label.switch
                             input(type="checkbox")
                             span.slider.round
@@ -26,7 +41,13 @@ html
                         table
                             thead 
                                 tr 
-                                    th
+                                    th Focus
+                                    th Source
+                                    th Code
+                                    th Code Name
+                                    th Span Text
+                                    th Confidence
+                                    th 
                             tbody#codeRow
                             
                     .btns

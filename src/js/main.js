@@ -2,7 +2,7 @@
     let API_URL;
     let org;//文章原始文
     const PID = new URL(window.location.href).searchParams.get('pid');
-    
+
     const cleanContainer = (target) => {
         const container = document.querySelector(target)
         while (container.firstChild) {
@@ -31,9 +31,9 @@
 
     const contentLoader = (path, params) => {
         let formData = new FormData();
-        if(params){
+        if (params) {
 
-            params.forEach(item=>{
+            params.forEach(item => {
                 formData.append(item.key, item.value);
             })
         }
@@ -57,43 +57,30 @@
         })
     }
 
-    const findBtns=(keyword)=>{
-        const content =document.querySelector("#myArtical .content")
+    const findBtns = (keyword) => {
+        const content = document.querySelector("#myArtical .content")
         content.innerHTML = org
         let reg = new RegExp(keyword, 'g');
         let artical = content.innerHTML;
         return [...artical.matchAll(reg)]
     }
 
-    const doSearch = (keyword, index) => {
-        const content =document.querySelector("#myArtical .content")
+    const doSearch = (keyword, type, index) => {
+        const content = document.querySelector("#myArtical .content")
         content.innerHTML = org
         //let keyword = document.querySelector("#keyword").value;
         let artical = content.innerHTML;
-       
+
         let reg = new RegExp(keyword, 'i');
         if (artical.match(reg)) {
             //cleanContainer(".btns")
-            content.innerHTML = artical.replaceAll(keyword, '<span class="mark">' + keyword + '</span>')
+            content.innerHTML = artical.replaceAll(keyword, `<span class="mark ${type}">${keyword}</span>`)
             content.querySelectorAll(".mark").forEach((item, _i) => {
-                if(_i == index){
+                if (_i == index) {
                     item.classList.add("high")
-                    const itemY = item.getBoundingClientRect().y - 10
-                    content.scrollTop = itemY
+                    const itemY = item.getBoundingClientRect().y - 10;
+                    content.scrollTo({ top: itemY, behavior: 'smooth' });
                 }
-                /*
-                btn = document.createElement("button")
-                btn.innerHTML = keyword
-                document.querySelector(".btns").appendChild(btn)
-                const itemY = item.getBoundingClientRect().y - 10
-                btn.addEventListener("click", () => {
-                    _a.querySelectorAll(".focus").forEach(btn => {
-                        btn.classList.remove("focus")
-                    })
-                    item.classList.add("focus")
-                    _a.scrollTop = itemY
-                })
-                */
             })
 
         }
@@ -101,67 +88,116 @@
 
 
 
-    
+
 
     //init
-    document.addEventListener("DOMContentLoaded",()=>{
+    document.addEventListener("DOMContentLoaded", () => {
         loadConfig().then(res => {
             API_URL = res.API_URL
             return contentLoader("./js/GetCaseContent.json")
-        }).then(artical=>{
+        }).then(artical => {
             let sw = true;
-            const changeArtical =(lang)=>{
-                if(lang=="CHT"){
+            const changeArtical = (lang) => {
+                if (lang == "CHT") {
                     document.querySelector("#myArtical .content").innerHTML = artical.CHT
-                    org=artical.CHT
-                }else{
+                    org = artical.CHT
+                } else {
                     document.querySelector("#myArtical .content").innerHTML = artical.ENG
-                    org=artical.ENG
+                    org = artical.ENG
                 }
             }
-            changeArtical(sw?"ENG":"CHT")
+            changeArtical(sw ? "ENG" : "CHT")
             document.querySelector("#myArtical .switch input").addEventListener("click", e => {
                 sw = !sw
-                changeArtical(sw?"ENG":"CHT")
+                changeArtical(sw ? "ENG" : "CHT")
             })
-            
+
             return contentLoader("./js/GetCaseDetail.json")
-        }).then(items=>{
-            const dataPool={}
-            items.codelist.map(item=>{
+        }).then(items => {
+            const dataPool = {}
+            items.codelist.map(item => {
                 //console.log(item)
-                if(dataPool[item.source] == undefined){
+                if (dataPool[item.source] == undefined) {
                     dataPool[item.source] = []
                 }
                 dataPool[item.source].push(item)
-            
+
             })
 
-            const renderRow = (data)=>{
+            const renderRow = (data) => {
                 const box = document.querySelector("#codeRow")
                 cleanContainer("#codeRow")
-                data.map(item=>{
+                data.map((item, sn) => {
                     const tr = document.createElement("tr");
-                    //console.log(item)
-                    for(let key in item)
-                    {
+                    tr.style.animationDelay = `${sn * 100}ms`
+                    
+                    //first td
+                    const td = document.createElement("td");
+                    const eye = document.createElement("img");
+                    eye.src = "./img/eye0.svg"
+                    eye.addEventListener("click",event=>{
+                        event.target.src.match("eye0.svg")?
+                            event.target.src="./img/eye1.svg":
+                            event.target.src="./img/eye0.svg"
+                    })                    
+                    td.appendChild(eye)
+                    tr.appendChild(td)
+                    //after first td
+                    for (let key in item) {
                         const td = document.createElement("td");
                         td.classList.add(key)
-                        switch(key){
+
+                        switch (key) {
                             case "spantxt":
                                 const box = document.createElement("div");
                                 box.classList.add("spanTxtBox")
-                                findBtns(item[key]).map((val, index)=>{
+                                findBtns(item[key]).map((val, index) => {
                                     const btn = document.createElement("button");
                                     btn.innerHTML = item[key]
-                                    btn.addEventListener("click",()=>{
-
-                                        doSearch(item[key], index)
+                                    btn.classList.add(item["source"])
+                                    btn.addEventListener("click", () => {
+                                        doSearch(item[key], item["source"], index)
                                     })
                                     box.appendChild(btn)
                                 })
                                 td.appendChild(box)
                                 break
+                            case "source":
+                                const badge = document.createElement("div")
+                                badge.classList.add("badge", item["source"])
+                                badge.innerHTML = item[key].replace("_", " ")
+                                td.appendChild(badge)
+                                break
+                            case "code":
+                                //td.classList.add("high")
+                                td.classList.add(item["source"])
+                                td.innerHTML = item[key]
+                                break
+                            case "check":
+                                const btnX = document.createElement("img");
+                                btnX.addEventListener("click", () => {
+                                    btnX.src = "./img/checkx1.svg"
+                                    btnV.src = "./img/checkv0.svg"
+                                })
+                                const btnV = document.createElement("img");
+                                btnV.addEventListener("click", () => {
+                                    btnX.src = "./img/checkx0.svg"
+                                    btnV.src = "./img/checkv1.svg"
+                                })
+                                if (item[key] == 1) {
+                                    btnX.src = "./img/checkx1.svg"
+                                    btnV.src = "./img/checkv0.svg"
+                                } else if (item[key] == 2) {
+                                    btnX.src = "./img/checkx0.svg"
+                                    btnV.src = "./img/checkv1.svg"
+                                } else {
+                                    btnX.src = "./img/checkx0.svg"
+                                    btnV.src = "./img/checkv0.svg"
+                                }
+                                td.appendChild(btnX)
+                                td.appendChild(btnV)
+                                break
+
                             default:
                                 td.innerHTML = item[key]
                         }
@@ -173,21 +209,23 @@
 
             const tabBox = document.querySelector("#codeCtrl .tabs")
 
-            for(let key in dataPool )
-            {
+            for (let key in dataPool) {
                 const btn = document.createElement('button')
-                btn.innerHTML = key
-                btn.addEventListener('click', ()=>{
-                    renderRow(dataPool[key])
-                    
+                btn.innerHTML = key.replace("_", " ")
+                btn.classList.add(key)
+                btn.addEventListener('click', () => {
+                    tabBox.querySelectorAll("button").forEach(btn => { btn.classList.remove("high") })
+                    renderRow(dataPool[key], btn)
+                    btn.classList.add("high")
                 })
                 tabBox.appendChild(btn)
-                
+
             }
-            renderRow(dataPool['icd10'])
+            renderRow(dataPool['ICD-10'])
+            tabBox.querySelector("button").classList.add("high")
 
             //dataPool.map()
-            
+
         })
     })
 

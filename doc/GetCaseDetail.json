@@ -1,9 +1,0 @@
-{
-    "case":"4028",
-    "codelist":[
-        {"source":" icd10", "code":"代碼", "codename":"名稱", "spantxt":"關鍵字", "confidence":1, "check":0},
-        {"source":" snomedct ", "code":"代碼", "codename":"名稱", "spantxt":"關鍵字", "confidence":1, "check":0},
-        {"source":" rxnorm ", "code":"代碼", "codename":"名稱", "spantxt":"關鍵字", "confidence":1, "check":0},
-        {"source":" lonic ", "code":"代碼", "codename":"名稱", "spantxt":"關鍵字", "confidence":1, "check":0}
-    ]
-}

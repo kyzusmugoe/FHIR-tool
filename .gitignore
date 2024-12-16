@@ -3,3 +3,4 @@ indexPage
 .DS_Store
 public/
 doc/sample.jpg
+dist/

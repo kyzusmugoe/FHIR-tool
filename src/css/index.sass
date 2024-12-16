@@ -1,9 +1,46 @@
 @use "sass:math"
 @use "./components" as components
+//@use "./table" as tc
 
 $imgPath:"../img/"
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Noto+Sans+TC:wght@100;300;400;500;700;900&display=swap')
 
+$lineColor: #DADADA 
+$highColor: #FF877A 
+//$activeColor: #FF877A
+
+$icd10: #F09000
+$snomedct: #FF877A
+$rxnorm: #07B5D3
+$lonic: #0098F0
+
+@mixin xxxl
+    @media(max-width:1920px)
+        @content
+
+@mixin xxl
+    @media(max-width:1440px)
+        @content
+
+@mixin xl
+    @media(max-width:1280px)
+        @content
+
+@mixin lg
+    @media(max-width:992px)
+        @content
+
+@mixin md
+    @media(max-width:768px)
+        @content
+
+@mixin sm
+    @media(max-width:414px)
+        @content
+
+@mixin ss
+    @media(max-width:320px)
+        @content
 
 @mixin flexBox($row, $col)
     display: flex
@@ -13,11 +50,43 @@ $imgPath:"../img/"
 @mixin fadeInAmin()
     animation-name: fadeInAmin
     animation-duration: .8s
+    animation-fill-mode: forwards
+    opacity: 0
     @keyframes fadeInAmin
         0% 
             opacity: 0
+            transform: translateY(-10px)
         100% 
             opacity: 1
+            transform: translateY(0)
+
+@mixin PanelConfig()
+    width:  calc(100% - 30px)
+    max-width: calc(800px - 30px)
+    padding: 15px
+    background-color: white
+    border-radius: 15px
+
+@mixin typesBG()
+    &.ICD-10
+        background-color: $icd10
+    &.SNOMED_CT
+        background-color: $snomedct
+    &.RxNorm
+        background-color: $rxnorm
+    &.LONIC
+        background-color: $lonic
+
+@mixin typesTxt()
+    &.ICD-10
+        color: $icd10
+    &.SNOMED_CT
+        color: $snomedct
+    &.RxNorm
+        color: $rxnorm
+    &.LONIC
+        color: $lonic
+    
 
 html,body
     height: 100%
@@ -28,6 +97,7 @@ body
     background: rgb(156,225,238)
     background: linear-gradient(0deg, rgba(156,225,238,1) 0%, rgba(0,152,240,1) 100%)
 
+    font-family: Roboto
 
 .app
     @include components.switch()
@@ -41,38 +111,109 @@ body
    
     header
         width: 100%
-           
-    .landscape
+        display: flex
+        justify-content: space-between
+    .nav
+        display: flex
+        justify-content: space-between
+        padding:10px 0
+    .panelContainer
         display: flex
         align-items: flex-start
-        background-color: white
-        
+        @include lg
+            flex-direction: column
         #myArtical
             white-space: pre-line
-            overflow-y: auto
-            width:  100%
-            max-width: 500px
-            height: 500px
-            
+            margin-right: 10px
+            margin-bottom: 10px
+            @include PanelConfig()
             .header
                 display: flex
                 justify-content: flex-end
-
+                align-items: center
+                border-bottom: 1px solid $lineColor 
+                padding: 10px 5px
+                margin-bottom: 10px
             .content
-                .mark
-                    background-color: yellow
-                .high
-                    background-color: red
-                    color: white
-                .focus
-                    background-color: blue
+                overflow-y: auto
+                height: 500px
+                span
+                    &.mark
+                        background-color: yellow
+                        color: #fff
+                        @include typesBG()
+                        
+                        transition: .4s
+                    &.high
+
+                        background-color: red
+                        color: black
+
         #codeCtrl
-            color:#006
-        #codeRow
-            td
-                vertical-align: top
+            @include PanelConfig()
+            .tabs
+                border-bottom: 1px solid $lineColor 
+                button
+                    font-size: 14px
+                    font-weight: 700
+                    background: none 
+                    border: none 
+                    background-color: #AEAFB0
+                    color: #fff
+                    border-top-left-radius: 10px
+                    border-top-right-radius: 10px
+                    padding: 10px
+                    margin: 0 5px
+                    transition: .4s
+                    &.high
+                        @include typesBG()
+
+        
+            table
+                width:  100%
+                border-collapse: collapse
+                th
+                    text-align: left
+                
+                #codeRow
+                    tr
+                        border-top: 1px solid $lineColor                            
+                        @include fadeInAmin()                            
+                        &:nth-child(odd)
+                            background-color: #f8f8f8
+                        td
+                            vertical-align: top
+                            padding: 5px 0
+                            &.high
+                                @include typesBG()
+                            .badge
+                                display: flex
+                                justify-content: center
+                                align-content: center
+                                border-radius: 4px
+                                color: white
+                                font-size: 14px
+                                font-weight: 600
+                                @include typesBG()
+                            
+                            img
+                                transition: .2s
+                                &:first-child
+                                    margin-right: 5px
+                                &:active
+                                    transform: scale(1.2)
+                                
             .spanTxtBox
                 display: flex
                 flex-direction: column
+                button
+                    background: none
+                    border: none
+                    text-align: left
+                    padding: 0
+                    font-size: 14px
+                    font-weight: 500
+                    margin-bottom: 3px
+                    @include typesTxt()
         .btns
             width: 500px
