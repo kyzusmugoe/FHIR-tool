@@ -2,7 +2,6 @@
     let API_URL;
     let org;//文章原始文
     const PID = new URL(window.location.href).searchParams.get('pid');
-
     const cleanContainer = (target) => {
         const container = document.querySelector(target)
         while (container.firstChild) {
@@ -64,31 +63,29 @@
         let artical = content.innerHTML;
         return [...artical.matchAll(reg)]
     }
-
+  
     const doSearch = (keyword, type, index) => {
         const content = document.querySelector("#myArtical .content")
         content.innerHTML = org
-        //let keyword = document.querySelector("#keyword").value;
         let artical = content.innerHTML;
-
         let reg = new RegExp(keyword, 'i');
+        let tempA;//safari因為會有畫面刷新的bug所以先存一份起來畫面捲動完成再貼回去一次
         if (artical.match(reg)) {
-            //cleanContainer(".btns")
             content.innerHTML = artical.replaceAll(keyword, `<span class="mark ${type}">${keyword}</span>`)
+            content.addEventListener("scrollend",ev=>{
+                console.log("scroll")
+            })
             content.querySelectorAll(".mark").forEach((item, _i) => {
                 if (_i == index) {
                     item.classList.add("high")
-                    const itemY = item.getBoundingClientRect().y - 10;
+                    tempA = content.innerHTML //備份
+                    const itemY = item.offsetTop - content.offsetTop
                     content.scrollTo({ top: itemY, behavior: 'smooth' });
+                    setTimeout(() => { content.innerHTML  = tempA }, 200)//貼回去
                 }
             })
-
         }
     }
-
-
-
-
 
     //init
     document.addEventListener("DOMContentLoaded", () => {
@@ -130,7 +127,6 @@
                 data.map((item, sn) => {
                     const tr = document.createElement("tr");
                     tr.style.animationDelay = `${sn * 100}ms`
-                    
                     //first td
                     const td = document.createElement("td");
                     const eye = document.createElement("img");
@@ -156,7 +152,10 @@
                                     btn.innerHTML = item[key]
                                     btn.classList.add(item["source"])
                                     btn.addEventListener("click", () => {
-                                        doSearch(item[key], item["source"], index)
+                                        //if(btn != currentBtn){
+                                            doSearch(item[key], item["source"], index)
+                                           // currentBtn = btn
+                                        //}
                                     })
                                     box.appendChild(btn)
                                 })
@@ -214,6 +213,10 @@
                 btn.innerHTML = key.replace("_", " ")
                 btn.classList.add(key)
                 btn.addEventListener('click', () => {
+                    const content = document.querySelector("#myArtical .content")
+                    content.scrollTo({ top: 0 });
+                    content.innerHTML  = org
+
                     tabBox.querySelectorAll("button").forEach(btn => { btn.classList.remove("high") })
                     renderRow(dataPool[key], btn)
                     btn.classList.add("high")
@@ -223,9 +226,6 @@
             }
             renderRow(dataPool['ICD-10'])
             tabBox.querySelector("button").classList.add("high")
-
-            //dataPool.map()
-
         })
     })
 
