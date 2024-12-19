@@ -87,31 +87,8 @@
         }
     }
 
-    //init
-    document.addEventListener("DOMContentLoaded", () => {
-        loadConfig().then(res => {
-            API_URL = res.API_URL
-            return contentLoader("./js/GetCaseContent.json")
-        }).then(artical => {
-            let sw = true;
-            const changeArtical = (lang) => {
-                if (lang == "CHT") {
-                    document.querySelector("#myArtical .content").innerHTML = artical.CHT
-                    org = artical.CHT
-                } else {
-                    document.querySelector("#myArtical .content").innerHTML = artical.ENG
-                    org = artical.ENG
-                }
-            }
-            changeArtical(sw ? "ENG" : "CHT")
-            document.querySelector("#myArtical .switch input").addEventListener("click", e => {
-                sw = !sw
-                changeArtical(sw ? "ENG" : "CHT")
-            })
-
-            return contentLoader("./js/GetCaseDetail.json")
-        }).then(items => {
-            const dataPool = {}
+    const renderCodePanel = items =>{
+        const dataPool = {}
             items.codelist.map(item => {
                 //console.log(item)
                 if (dataPool[item.source] == undefined) {
@@ -226,6 +203,36 @@
             }
             renderRow(dataPool['ICD-10'])
             tabBox.querySelector("button").classList.add("high")
+    }
+
+    //init
+    document.addEventListener("DOMContentLoaded", () => {
+        loadConfig().then(res => {
+            API_URL = res.API_URL
+            return contentLoader("./js/GetCaseContent.json")
+        }).then(artical => {
+            let sw = true;
+            const changeArtical = (lang) => {
+                if (lang == "CHT") {
+                    document.querySelector("#myArtical .content").innerHTML = artical.CHT
+                    org = artical.CHT
+                } else {
+                    document.querySelector("#myArtical .content").innerHTML = artical.ENG
+                    org = artical.ENG
+                }
+            }
+            changeArtical(sw ? "ENG" : "CHT")
+            document.querySelector("#myArtical .switch input").addEventListener("click", e => {
+                sw = !sw
+                changeArtical(sw ? "ENG" : "CHT")
+            })
+
+            return contentLoader("./js/GetCaseDetail.json")
+        }).then(items => {
+
+            renderCodePanel(items)
+
+            
         })
     })
 

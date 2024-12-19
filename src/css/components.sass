@@ -46,17 +46,36 @@
                 border-radius: 34px
                 &:before 
                     border-radius: 50%
-        
+
+@mixin button()      
     button
         border: none
         background: none
         padding:10px 15px
         color: white
         font-size: 14px
-
+        transition: .2s
+        &:active
+            transform: scale(1.1)
         &.main
             border-radius: 5px
             background-color: #1855BE
         &.outline
             border-radius: 5px
             border:1px solid #fff
+
+@mixin modal()   
+    .modal
+        position: fixed
+        top: 0
+        left: 0
+        display: flex
+        justify-content: center
+        align-items: center
+        width: 100%
+        height: 100%
+        background-color: rgba(0, 0, 0, .6)
+        &.close
+            display: none
+        .content
+            background-color: white
