@@ -243,7 +243,8 @@
         document.querySelector(".nav span.case").innerHTML = CaseID
         document.querySelector(".caselist").addEventListener("click", ()=>{
             document.querySelector(".modal.codeList").classList.remove("close")
-            contentLoader(`${config.API_PATH}/GetCaseListByProjectID` ).then(res=>{
+            //contentLoader(`${config.API_PATH}/GetCaseListByProjectID` ).then(res=>{
+            contentLoader("./js/GetCaseListByProjectID.json" ).then(res=>{
                 renderCodeList(res)
             })            
         })
@@ -269,7 +270,8 @@
     
         loadConfig().then(res => {
             config = res
-            return contentLoader(`${config.API_PATH}/GetCaseContent`)
+            //return contentLoader(`${config.API_PATH}/GetCaseContent`)
+            return contentLoader("./js/GetCaseContent.json")
         }).then(artical => { 
             let sw = true;
             const changeArtical = (lang) => {
@@ -286,7 +288,8 @@
                 sw = !sw
                 changeArtical(sw ? "ENG" : "CHT")
             })
-            return contentLoader(`${config.API_PATH}/GetCaseDetail`)
+            //return contentLoader(`${config.API_PATH}/GetCaseDetail`)
+            return contentLoader("./js/GetCaseDetail.json")
         }).then(items => {
             renderCodePanel(items)
         })
