@@ -1,46 +1,21 @@
 @use "sass:math"
 @use "./components" as components
+@use "./config"
 //@use "./table" as tc
 
 $imgPath:"../img/"
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Noto+Sans+TC:wght@100;300;400;500;700;900&display=swap')
+//@import url('./config.sass')
 
-$lineColor: #DADADA 
-$highColor: #FF877A 
-//$activeColor: #FF877A
+/*
+    $lineColor: #DADADA 
+    $highColor: #FF877A 
+    $icd10: #F09000
+    $snomedct: #FF877A
+    $rxnorm: #07B5D3
+    $lonic: #0098F0
 
-$icd10: #F09000
-$snomedct: #FF877A
-$rxnorm: #07B5D3
-$lonic: #0098F0
 
-@mixin xxxl
-    @media(max-width:1920px)
-        @content
-
-@mixin xxl
-    @media(max-width:1440px)
-        @content
-
-@mixin xl
-    @media(max-width:1280px)
-        @content
-
-@mixin lg
-    @media(max-width:992px)
-        @content
-
-@mixin md
-    @media(max-width:768px)
-        @content
-
-@mixin sm
-    @media(max-width:414px)
-        @content
-
-@mixin ss
-    @media(max-width:320px)
-        @content
 
 @mixin flexBox($row, $col)
     display: flex
@@ -69,23 +44,23 @@ $lonic: #0098F0
 
 @mixin typesBG()
     &.ICD-10
-        background-color: $icd10
+        background-color: config.$icd10
     &.SNOMED_CT
-        background-color: $snomedct
+        background-color: config.$snomedct
     &.RxNorm
-        background-color: $rxnorm
+        background-color: config.$rxnorm
     &.LONIC
-        background-color: $lonic
+        background-color: config.$lonic
 
 @mixin typesTxt()
     &.ICD-10
-        color: $icd10
+        color: config.$icd10
     &.SNOMED_CT
-        color: $snomedct
+        color: config.$snomedct
     &.RxNorm
-        color: $rxnorm
+        color: config.$rxnorm
     &.LONIC
-        color: $lonic
+        color: config.$lonic
     
 
 html,body
@@ -100,9 +75,7 @@ body
     font-family: Roboto
 
 .app
-    @include components.switch()
-    @include components.button()
-    @include components.modal()
+   
     
     width: calc(100% - 30px)
     max-width: 1615px
@@ -136,7 +109,7 @@ body
     .panelContainer
         display: flex
         align-items: flex-start
-        @include lg
+        @include config.lg()
             flex-direction: column
         #myArtical
             white-space: pre-line
@@ -147,7 +120,7 @@ body
                 display: flex
                 justify-content: flex-end
                 align-items: center
-                border-bottom: 1px solid $lineColor 
+                border-bottom: 1px solid config.$lineColor 
                 padding: 10px 5px
                 margin-bottom: 10px
             .content
@@ -168,7 +141,7 @@ body
         #codeCtrl
             @include PanelConfig()
             .tabs
-                border-bottom: 1px solid $lineColor 
+                border-bottom: 1px solid config.$lineColor 
                 button
                     font-size: 14px
                     font-weight: 700
@@ -193,7 +166,7 @@ body
                 
                 #codeRow
                     tr
-                        border-top: 1px solid $lineColor                            
+                        border-top: 1px solid config.$lineColor                            
                         @include fadeInAmin()                            
                         &:nth-child(odd)
                             background-color: #f8f8f8
@@ -233,3 +206,7 @@ body
                     @include typesTxt()
         .btns
             width: 500px
+            
+    @include components.switch
+    @include components.button
+    @include components.modal

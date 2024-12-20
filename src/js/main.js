@@ -1,7 +1,9 @@
 (() => {
-    let API_URL;
     let org;//文章原始文
-    const PID = new URL(window.location.href).searchParams.get('pid');
+    let config;
+
+    const CaseID = new URL(window.location.href).searchParams.get('CaseID');
+
     const cleanContainer = (target) => {
         const container = document.querySelector(target)
         while (container.firstChild) {
@@ -182,9 +184,7 @@
                     box.appendChild(tr)
                 })
             }
-
             const tabBox = document.querySelector("#codeCtrl .tabs")
-
             for (let key in dataPool) {
                 const btn = document.createElement('button')
                 btn.innerHTML = key.replace("_", " ")
@@ -205,12 +205,72 @@
             tabBox.querySelector("button").classList.add("high")
     }
 
+    const renderCodeList = list => {
+        cleanContainer(".modal.codeList .content .not")
+        cleanContainer(".modal.codeList .content .queue")
+        cleanContainer(".modal.codeList .content .done")
+        list.caseList.map(item => {
+            const caseBtn = document.createElement("button")
+            caseBtn.innerHTML = item.caseName
+            if(CaseID == item.caseName) caseBtn.classList.add("current")
+            switch(parseInt(item.state)){
+                case 0:
+                    caseBtn.classList.add("not")
+                    document.querySelector(".modal.codeList .content .not").appendChild(caseBtn)
+                    break
+                case 1:
+                    caseBtn.classList.add("queue")
+                    document.querySelector(".modal.codeList .content .queue").appendChild(caseBtn)
+                    break
+                case 2:
+                    caseBtn.classList.add("done")
+                    document.querySelector(".modal.codeList .content .done").appendChild(caseBtn)
+                    break
+            }
+            caseBtn.addEventListener("click",()=>{
+                window.open("./?CaseID="+item.caseName,"_self")
+            })
+        })
+    }
+
+    const sendData = ()=>{
+        //POST資料
+    }
+    
+
     //init
     document.addEventListener("DOMContentLoaded", () => {
+        document.querySelector(".nav span.case").innerHTML = CaseID
+        document.querySelector(".caselist").addEventListener("click", ()=>{
+            document.querySelector(".modal.codeList").classList.remove("close")
+            contentLoader(`${config.API_PATH}/GetCaseListByProjectID` ).then(res=>{
+                renderCodeList(res)
+            })            
+        })
+        
+        document.querySelectorAll(".modal .closeBtn").forEach(closeBtn=>{
+            closeBtn.addEventListener("click", ()=>{
+                document.querySelectorAll(".modal").forEach(modal=>{
+                    modal.classList.add("close")
+                })
+            })
+        })
+        
+        //開啟送出資料視窗
+        document.querySelector(".nav .send").addEventListener("click", ()=>{
+            document.querySelector(".modal.sendCheck").classList.remove("close")
+        })
+
+        //送出資料
+        document.querySelector(".doSend").addEventListener("click", ()=>{
+            document.querySelector(".modal.sendCheck").classList.add("close")
+            sendData()
+        })
+    
         loadConfig().then(res => {
-            API_URL = res.API_URL
-            return contentLoader("./js/GetCaseContent.json")
-        }).then(artical => {
+            config = res
+            return contentLoader(`${config.API_PATH}/GetCaseContent`)
+        }).then(artical => { 
             let sw = true;
             const changeArtical = (lang) => {
                 if (lang == "CHT") {
@@ -226,14 +286,9 @@
                 sw = !sw
                 changeArtical(sw ? "ENG" : "CHT")
             })
-
-            return contentLoader("./js/GetCaseDetail.json")
+            return contentLoader(`${config.API_PATH}/GetCaseDetail`)
         }).then(items => {
-
             renderCodePanel(items)
-
-            
         })
     })
-
 })()

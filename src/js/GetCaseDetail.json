@@ -1,5 +1,5 @@
 {
-    "case":"4028",
+    "case":"ec36",
     "codelist":[
         {"source":"ICD-10", "code":"代碼1", "codename":"名稱1", "spantxt":"Presentillness", "confidence":1, "check":0},
         {"source":"SNOMED_CT", "code":"代碼2", "codename":"名稱2", "spantxt":"Temperature", "confidence":1, "check":1},
@@ -11,6 +11,7 @@
         {"source":"LONIC", "code":"代碼8", "codename":"名稱8", "spantxt":"Supple", "confidence":1, "check":0},
         {"source":"RxNorm", "code":"代碼9", "codename":"名稱9", "spantxt":"Retinal", "confidence":1, "check":0},
         {"source":"LONIC", "code":"代碼10", "codename":"名稱10", "spantxt":"Heart", "confidence":1, "check":0},
-        {"source":"ICD-10", "code":"代碼11", "codename":"名稱11", "spantxt":"Neck", "confidence":1, "check":0}
+        {"source":"ICD-10", "code":"代碼11", "codename":"名稱11", "spantxt":"Neck", "confidence":1, "check":0},
+        {"source":"ICD-10", "code":"代碼12", "codename":"名稱12", "spantxt":"Rate", "confidence":1, "check":0}
     ]
 }

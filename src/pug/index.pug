@@ -18,8 +18,9 @@ html
                     span Project 951e7f53-4eea-4abe-9298-0afbc984f508
             .nav 
                 div
-                    button.main 選擇病例
-                    span.case Case: ec36 
+                    button.main.caselist 選擇病例
+                    span Case:
+                        span.case 
                     button.outline.nextCase 下一筆
                 div
                     span.right 正確 22
@@ -65,12 +66,23 @@ html
                 //-include ./comps/end.pug
             //-include ./comps/loading.pug
 
-            .modal.close
-                .content
-                    | test
-    //-        
-        script.
-            const resultPath = "./js/resultPath.json"
-            const savePath = "./js/savePath.json"
-            const imgPath = "./img/"
-            const deepLink = "https://cathay.app.link/vTw2nKudkab?router=/challenge/CogGame&task_no=TK_20231001168168168Mo8"
+            .modal.codeList.close
+                .box
+                    .header
+                        p 選擇病例
+                        button.main.closeBtn X
+                    .content
+                        p 處理中
+                        .queue
+                        p 未分析
+                        .not
+                        p 已完成
+                        .done 
+            .modal.sendCheck.close 
+                .box
+                    .header
+                        p 確定是否送出
+                        button.main.closeBtn X
+                    .content
+                        button.main.closeBtn 取消
+                        button.main.doSend 確定

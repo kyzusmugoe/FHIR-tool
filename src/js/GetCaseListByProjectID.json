@@ -1,8 +1,11 @@
 {
     "caseList":[ 
-        {"caseName":"4804", "state":"0"},
-        {"caseName":"ec36", "state":"1"},
-        {"caseName":"dfa0", "state":"2"}
+        {"caseName":"4804", "state":0},
+        {"caseName":"ec36", "state":1},
+        {"caseName":"dfa0", "state":2},
+        {"caseName":"8423", "state":0},
+        {"caseName":"ab84", "state":1},
+        {"caseName":"grg2", "state":2}
     ]
 }
     
