@@ -1,0 +1,10 @@
+{
+    "liveServer.settings.host": "localhost",
+    "liveServer.settings.https": {
+        "enable": true,
+        "cert": "C:/example.com+5.pem",
+        "key": "C:/example.com+5-key.pem",
+        "passphrase": "12345"
+    }
+
+}
