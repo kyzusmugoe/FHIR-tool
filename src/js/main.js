@@ -4,8 +4,8 @@
     let dataPool = {}; // 从 GetCaseDetail 获取的原始数据
 
     // 从 URL 获取 CaseID 和 ProjectID 参数
-    const CaseID = new URL(window.location.href).searchParams.get('CaseID'); 
-    const ProjectID = new URL(window.location.href).searchParams.get('ProjectID'); 
+    const CaseID = new URL(window.location.href).searchParams.get('CaseID');
+    const ProjectID = new URL(window.location.href).searchParams.get('ProjectID');
 
     const replaceWhitwSpace = "_"; // 用于替换空白字符
 
@@ -68,11 +68,10 @@
     const renderCodePanel = response => {
         // 清空之前的 dataPool
         dataPool = {};
-
+        let spantxtBox = []
         // 遍历段落，收集数据
         response.paragraphs.forEach(paragraph => {
             let paragraphType = paragraph.type;
-
             paragraph.code_list.forEach(item => {
                 // 初始化 dataPool 中的 source，如果还未初始化
                 if (!dataPool[item.source]) {
@@ -81,6 +80,7 @@
 
                 // 将项添加到 dataPool 中
                 dataPool[item.source].push({
+                    eye: 0,
                     source: item.source,
                     code: item.code,
                     code_name: item.code_name,
@@ -89,8 +89,22 @@
                     check: item.check, // 0未处理, -1错误, 1正确
                     insurance_related: item.insurance_related
                 });
+
+                spantxtBox.push({
+                    span_txt: item.span_txt,
+                    code: item.code,
+                    source: item.source,
+                })
             });
         });
+
+        const findObj = (source, code, action) => {
+            dataPool[source].forEach(d => {
+                if (d.code == code) {
+                    action(d)
+                }
+            });
+        }
 
         // 渲染标签和行
         const renderRow = (data) => {
@@ -102,25 +116,31 @@
                 // 第一列
                 const td = document.createElement("td");
                 const eye = document.createElement("img");
-                eye.classList.add("see")
-                eye.src = "./img/eye1.svg";
+                eye.classList.add("eye")
+                eye.dataset.code = item['code'];
+                eye.src = item.eye == 0 ? "./img/eye0.svg" : "./img/eye1.svg";
                 eye.addEventListener("click", event => {
-                    if (event.target.src.includes("eye0.svg")) {
-                        event.target.src = "./img/eye1.svg";
-                        document.querySelectorAll("#myArtical .content .mark").forEach(item=>{
-                            item.classList.remove("close")
-                        })
-                    } else {
-                        event.target.src = "./img/eye0.svg";
-                        document.querySelectorAll("#myArtical .content .mark").forEach(item=>{
-                            item.classList.add("close")
-                        })
-                    }
+                    findObj(item["source"], event.target.dataset.code, res => {
+                        if (res.eye == 0) {
+                            res.eye = 1;
+                            event.target.src = "./img/eye1.svg";
+                            document.querySelectorAll(`#myArtical .content .mark.code${event.target.dataset.code}`).forEach(mark => {
+                                mark.classList.remove("close")
+                            })
+                        } else {
+                            res.eye = 0;
+                            event.target.src = "./img/eye0.svg";
+                            document.querySelectorAll(`#myArtical .content .mark.code${event.target.dataset.code}`).forEach(mark => {
+                                mark.classList.add("close")
+                            })
+                        }
+                    })
                 });
                 td.appendChild(eye);
                 tr.appendChild(td);
                 // 其他列
                 for (let key in item) {
+
                     const td = document.createElement("td");
                     td.classList.add(key);
 
@@ -128,16 +148,19 @@
                         case "span_txt":
                             const box = document.createElement("div");
                             box.classList.add("spanTxtBox")
-                            //console.log(item["source"], item[key])
                             findBtns(item[key]).map((val, index) => {
                                 const btn = document.createElement("button");
+                                btn.dataset.code = item['code'];
                                 btn.innerHTML = item[key]
                                 btn.classList.add(item["source"])
-                                btn.addEventListener("click", () => {
+                                btn.addEventListener("click", event => {
                                     doSearch(item[key], item["source"], index)
+                                    findObj(item["source"], event.target.dataset.code, (d) => {
+                                        d.eye = 1;
+                                        eye.src = "./img/eye1.svg";
+                                    })
                                 })
                                 box.appendChild(btn)
-                                //console.log(box)
                             })
                             td.appendChild(box)
                             break
@@ -152,14 +175,14 @@
                             td.innerHTML = item[key];
                             break;
                         case "check":
-                            const changeBtnState = (_x,_v, _val)=>{
+                            const changeBtnState = (_x, _v, _val) => {
                                 if (_val == -1) {
                                     _x.src = "./img/checkx1.svg";
                                     _v.src = "./img/checkv0.svg";
                                 } else if (_val == 1) {
                                     _x.src = "./img/checkx0.svg";
                                     _v.src = "./img/checkv1.svg";
-                                    
+
                                 } else {
                                     _x.src = "./img/checkx0.svg";
                                     _v.src = "./img/checkv0.svg";
@@ -167,41 +190,35 @@
                             }
                             const btnX = document.createElement("img");
                             const btnV = document.createElement("img");
-
                             btnX.dataset.code = item['code'];
                             btnX.addEventListener("click", event => {
-                                dataPool[item["source"]].forEach(d => {
-                                    if (d.code == event.target.dataset.code) {
-                                        d.check == 0 || d.check == 1?
-                                            d.check =  -1:
-                                            d.check =  0;
-                                        changeBtnState(btnX, btnV, d.check)
-                                    }
-                                });
+                                findObj(item["source"], event.target.dataset.code, (d) => {
+                                    d.check == 0 || d.check == 1 ?
+                                        d.check = -1 :
+                                        d.check = 0;
+                                    changeBtnState(btnX, btnV, d.check)
+                                })
                             });
-                            
+
                             btnV.dataset.code = item['code'];
                             btnV.addEventListener("click", event => {
-                                dataPool[item["source"]].forEach(d => {
-                                    if (d.code == event.target.dataset.code) {
-                                        d.check == 0 || d.check == -1?
-                                            d.check =  1:
-                                            d.check =  0;
-                                        changeBtnState(btnX, btnV, d.check)
-                                    }
-                                });
+                                findObj(item["source"], event.target.dataset.code, (d) => {
+                                    d.check == 0 || d.check == -1 ?
+                                        d.check = 1 :
+                                        d.check = 0;
+                                    changeBtnState(btnX, btnV, d.check)
+                                })
                             });
                             changeBtnState(btnX, btnV, item[key])
                             td.appendChild(btnX);
                             td.appendChild(btnV);
                             break;
-                        
-                        /*
                         default:
                             td.innerHTML = item[key];
-                        */
                     }
-                    tr.appendChild(td);
+                    if (key != "eye") {
+                        tr.appendChild(td);
+                    }
                 }
                 box.appendChild(tr);
             });
@@ -210,31 +227,33 @@
         // 查找关键字按钮
         const findBtns = (keyword) => {
             const content = document.querySelector("#myArtical .content");
-            content.innerHTML = org;
+            //content.innerHTML = org;
             let reg = new RegExp(keyword, 'g');
             let artical = content.innerHTML;
             return [...artical.matchAll(reg)];
         }
 
-        // 搜索关键字并高亮显示
-        const doSearch = (keyword, type, index) => {
+        //標記所有關鍵字
+        spantxtBox.map(item => {
             const content = document.querySelector("#myArtical .content");
-            content.innerHTML = org;
             let artical = content.innerHTML;
-            let reg = new RegExp(keyword, 'gi');
+            let reg = new RegExp(item.span_txt, 'gi');
             let tempA;
             if (artical.match(reg)) {
-                content.innerHTML = artical.replace(reg, `<span class="mark ${type}">${keyword}</span>`);
-                content.querySelectorAll(".mark").forEach((item, _i) => {
-                    if (_i == index) {
-                        item.classList.add("high");
-                        tempA = content.innerHTML; // 备份
-                        const itemY = item.offsetTop - content.offsetTop;
-                        content.scrollTo({ top: itemY, behavior: 'smooth' });
-                        setTimeout(() => { content.innerHTML = tempA }, 200); // 贴回去
-                    }
-                });
+                content.innerHTML = artical.replace(reg, `<span class="mark ${item.source} code${item.code} close ">${item.span_txt}</span>`);
             }
+        })
+
+        // 搜索关键字并高亮显示
+        const doSearch = (keyword, source, index) => {
+            document.querySelectorAll(`.mark.${source}`).forEach(item => {
+                if (item.innerHTML == keyword) {
+                    const content = document.querySelector("#myArtical .content");
+                    const itemY = item.offsetTop - content.offsetTop;
+                    content.scrollTo({ top: itemY, behavior: 'smooth' });
+                    item.classList.remove("close")
+                }
+            })
         }
 
         // 渲染标签
@@ -245,9 +264,9 @@
             btn.innerHTML = key.replace("_", " ");
             btn.classList.add(key);
             btn.addEventListener('click', () => {
-                const content = document.querySelector("#myArtical .content");
-                content.scrollTo({ top: 0 });
-                content.innerHTML = org;
+                //const content = document.querySelector("#myArtical .content");
+                //content.scrollTo({ top: 0 });
+                //content.innerHTML = org;
 
                 tabBox.querySelectorAll("button").forEach(btn => { btn.classList.remove("high") });
                 renderRow(dataPool[key], btn);
@@ -320,18 +339,18 @@
             `${config.API_PATH}/code/status`,
             payload
         )
-        .then(response => {
-            if (response.meta && response.meta.code === 200) {
-                console.log("数据提交成功");
-                // 根据需要处理响应
-            } else {
-                throw new Error("数据提交失败");
-            }
-        })
-        .catch(error => {
-            console.error(error);
-            // 错误处理
-        })
+            .then(response => {
+                if (response.meta && response.meta.code === 200) {
+                    console.log("数据提交成功");
+                    // 根据需要处理响应
+                } else {
+                    throw new Error("数据提交失败");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                // 错误处理
+            })
     }
 
     // 设置按钮和事件处理程序
@@ -347,17 +366,17 @@
                     "page_size": 20
                 }
             )
-            .then(res => {
-                if (res.meta && res.meta.code === 200) {
-                    renderCodeList(res);
-                } else {
-                    throw new Error("加载病例列表失败");
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                // 错误处理
-            })
+                .then(res => {
+                    if (res.meta && res.meta.code === 200) {
+                        renderCodeList(res);
+                    } else {
+                        throw new Error("加载病例列表失败");
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    // 错误处理
+                })
         })
 
         // 关闭模态框
@@ -409,9 +428,9 @@
             config = res;
             buttonsSetting(config);
             // 获取病例内容
-           // const testa= config["test a"]
-           // document.querySelector(".nav span.caseID").innerHTML = testa
-           return contentLoader("./js/GetCaseContent.json")//測試用
+            // const testa= config["test a"]
+            // document.querySelector(".nav span.caseID").innerHTML = testa
+            //return contentLoader("./js/GetCaseContent.json")//測試用
             return contentLoader(
                 `${config.API_PATH}/case/content`,
                 {
@@ -423,7 +442,7 @@
             if (artical.meta && artical.meta.code === 200) {
                 changeArticalLang(artical);
                 // 获取病例详细信息
-                return contentLoader("./js/GetCaseDetail.json")//測試用
+                //return contentLoader("./js/GetCaseDetail.json")//測試用
                 return contentLoader(
                     `${config.API_PATH}/case/detail`,
                     {

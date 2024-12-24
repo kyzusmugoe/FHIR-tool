@@ -8,7 +8,7 @@
     "paragraphs": [
         {
             "cht": "病人出現胸痛，持續兩小時，伴隨呼吸困難和頭暈。",
-            "eng": "Patient presented with chest pain lasting for two hours, along with shortness of breath and dizziness.",
+            "eng": "chest pain AS: # Patient presented with chest pain lasting for two hours, along with shortness of breath and dizziness.",
             "type": "EmergencyRecord"
         },
         {
