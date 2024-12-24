@@ -45,21 +45,21 @@ $imgPath:"../img/"
 @mixin typesBG()
     &.ICD-10
         background-color: config.$icd10
-    &.SNOMED_CT
+    &.SNOMEDCT_US
         background-color: config.$snomedct
     &.RxNorm
         background-color: config.$rxnorm
-    &.LONIC
+    &.LOINC
         background-color: config.$lonic
 
 @mixin typesTxt()
     &.ICD-10
         color: config.$icd10
-    &.SNOMED_CT
+    &.SNOMEDCT_US
         color: config.$snomedct
     &.RxNorm
         color: config.$rxnorm
-    &.LONIC
+    &.LOINC
         color: config.$lonic
     
 
@@ -75,8 +75,6 @@ body
     font-family: Roboto
 
 .app
-   
-    
     width: calc(100% - 30px)
     max-width: 1615px
     padding: 15px
@@ -135,14 +133,20 @@ body
                         
                         transition: .4s
                     &.high
-
                         background-color: red
                         color: black
+                        
+                    &.close
+                        background: none !important
+                        color:#000
+                        
 
         #codeCtrl
+           
             @include PanelConfig()
             .tabs
                 border-bottom: 1px solid config.$lineColor 
+
                 button
                     font-size: 14px
                     font-weight: 700
@@ -176,9 +180,11 @@ body
                         td
                             vertical-align: top
                             padding: 5px
+                            
                             &.high
                                 @include typesBG()
                             .badge
+                                padding:2px 4px
                                 white-space: nowrap 
                                 display: flex
                                 justify-content: center
@@ -197,6 +203,19 @@ body
                                     transform: scale(1.2)
                             &.code
                                 @include typesTxt()
+                            
+                            &:nth-child(1)
+                                text-align: center
+                                width: 30px
+                            
+                            &:nth-child(2)
+                                text-align: center
+                                max-width: 120px
+                            &:nth-child(3)
+                                text-align: center
+                                min-width: 80px
+
+                                
                                 
             .spanTxtBox
                 display: flex

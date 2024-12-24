@@ -1,24 +1,23 @@
-/*
-    1. 程式進入點由最下方的init處開始
-    2. 由於json在讀取空白字元會出現錯誤，所以json的檔案暫時使用底線取代空白字元，讀取完後再取代
-*/
 (() => {
-    let org;//文章原始文
-    let config;//設定物件
-    let dataPool = {}  //從GetCaseDetail取得的rowdata
-   
-    const CaseID = new URL(window.location.href).searchParams.get('CaseID'); //從url取得CaseID參數
-    const ProjectID = "951e7f53-4eea-4abe-9298-0afbc984f508"; //目前不知道PID的取得來源？
-    const replaceWhitwSpace= "_"//取代的空白字元
-    
+    let org; // 原始文章文本
+    let config; // 配置对象
+    let dataPool = {}; // 从 GetCaseDetail 获取的原始数据
+
+    // 从 URL 获取 CaseID 和 ProjectID 参数
+    const CaseID = new URL(window.location.href).searchParams.get('CaseID'); 
+    const ProjectID = new URL(window.location.href).searchParams.get('ProjectID'); 
+
+    const replaceWhitwSpace = "_"; // 用于替换空白字符
+
+    // 清空指定容器内的所有子元素
     const cleanContainer = (target) => {
-        const container = document.querySelector(target)
+        const container = document.querySelector(target);
         while (container.firstChild) {
-            container.removeChild(container.lastChild)
+            container.removeChild(container.lastChild);
         }
     }
 
-    //讀取設定檔
+    // 加载配置文件
     const loadConfig = () => {
         return new Promise((resolve, reject) => {
             fetch("./js/config.json", {
@@ -27,116 +26,109 @@
                 if (response.ok) {
                     return response.json();
                 } else {
-                    console.log("連線失敗");
+                    console.log("配置文件加载失败");
                     return null;
                 }
             }).then(result => {
-                resolve(result)
+                resolve(result);
             }).catch(error => {
                 console.error(error);
             })
         })
     }
 
-    //讀取資料 目前都是讀取本機json的資料 這部分在看您要如何修改
+    // 通过 API 请求加载数据
     const contentLoader = (path, params) => {
-        let formData = new FormData();
-        if (params) {
-
-            params.forEach(item => {
-                formData.append(item.key, item.value);
-            })
-        }
-
         return new Promise((resolve, reject) => {
             fetch(path, {
+                //method: 'POST',
                 method: 'GET',
-                //body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                    // 如果需要其他头信息，可以在这里添加
+                },
+                body: JSON.stringify(params)
             }).then(response => {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    console.log("連線失敗");
-                    return null;
+                    console.log("连接失败");
+                    reject(response);
                 }
             }).then(result => {
-                resolve(result)
+                resolve(result);
             }).catch(error => {
                 console.error(error);
+                reject(error);
             })
         })
     }
-    
-    //設定右方功能欄
-    const renderCodePanel = items =>{
-        
-        const findBtns = (keyword) => {
-            const content = document.querySelector("#myArtical .content")
-            content.innerHTML = org
-            let reg = new RegExp(keyword, 'g');
-            let artical = content.innerHTML;
-            return [...artical.matchAll(reg)]
-        }
 
-        //關鍵字尋找的功能
-        const doSearch = (keyword, type, index) => {
-            const content = document.querySelector("#myArtical .content")
-            content.innerHTML = org
-            let artical = content.innerHTML;
-            let reg = new RegExp(keyword, 'i');
-            let tempA;//safari因為會有畫面刷新的bug所以先存一份起來畫面捲動完成再貼回去一次
-            if (artical.match(reg)) {
-                content.innerHTML = artical.replaceAll(keyword, `<span class="mark ${type}">${keyword}</span>`)
-                content.addEventListener("scrollend",ev=>{
-                    console.log("scroll")
-                })
-                content.querySelectorAll(".mark").forEach((item, _i) => {
-                    if (_i == index) {
-                        item.classList.add("high")
-                        tempA = content.innerHTML //備份
-                        const itemY = item.offsetTop - content.offsetTop
-                        content.scrollTo({ top: itemY, behavior: 'smooth' });
-                        setTimeout(() => { content.innerHTML  = tempA }, 200)//貼回去
-                    }
-                })
-            }
-        }
+    // 设置右侧功能栏
+    const renderCodePanel = response => {
+        // 清空之前的 dataPool
+        dataPool = {};
 
-        items.codelist.map(item => {
-            if (dataPool[item.source] == undefined) {
-                dataPool[item.source] = []
-            }
-            dataPool[item.source].push(item)
-        })
-        
-        
-        //每一條code資料的內容
+        // 遍历段落，收集数据
+        response.paragraphs.forEach(paragraph => {
+            let paragraphType = paragraph.type;
+
+            paragraph.code_list.forEach(item => {
+                // 初始化 dataPool 中的 source，如果还未初始化
+                if (!dataPool[item.source]) {
+                    dataPool[item.source] = [];
+                }
+
+                // 将项添加到 dataPool 中
+                dataPool[item.source].push({
+                    source: item.source,
+                    code: item.code,
+                    code_name: item.code_name,
+                    span_txt: item.span_txt,
+                    confidence: item.confidence,
+                    check: item.check, // 0未处理, -1错误, 1正确
+                    insurance_related: item.insurance_related
+                });
+            });
+        });
+
+        // 渲染标签和行
         const renderRow = (data) => {
-            const box = document.querySelector("#codeRow")
-            cleanContainer("#codeRow")
+            const box = document.querySelector("#codeRow");
+            cleanContainer("#codeRow");
             data.map((item, sn) => {
                 const tr = document.createElement("tr");
-                tr.style.animationDelay = `${sn * 100}ms`
-                //first td
+                tr.style.animationDelay = `${sn * 100}ms`;
+                // 第一列
                 const td = document.createElement("td");
                 const eye = document.createElement("img");
-                eye.src = "./img/eye0.svg"
-                eye.addEventListener("click",event=>{
-                    event.target.src.match("eye0.svg")?
-                        event.target.src="./img/eye1.svg":
-                        event.target.src="./img/eye0.svg"
-                })                    
-                td.appendChild(eye)
-                tr.appendChild(td)
-                //after first td
+                eye.classList.add("see")
+                eye.src = "./img/eye1.svg";
+                eye.addEventListener("click", event => {
+                    if (event.target.src.includes("eye0.svg")) {
+                        event.target.src = "./img/eye1.svg";
+                        document.querySelectorAll("#myArtical .content .mark").forEach(item=>{
+                            item.classList.remove("close")
+                        })
+                    } else {
+                        event.target.src = "./img/eye0.svg";
+                        document.querySelectorAll("#myArtical .content .mark").forEach(item=>{
+                            item.classList.add("close")
+                        })
+                    }
+                });
+                td.appendChild(eye);
+                tr.appendChild(td);
+                // 其他列
                 for (let key in item) {
                     const td = document.createElement("td");
-                    td.classList.add(key)
+                    td.classList.add(key);
 
                     switch (key) {
-                        case "spantxt":
+                        case "span_txt":
                             const box = document.createElement("div");
                             box.classList.add("spanTxtBox")
+                            //console.log(item["source"], item[key])
                             findBtns(item[key]).map((val, index) => {
                                 const btn = document.createElement("button");
                                 btn.innerHTML = item[key]
@@ -145,192 +137,313 @@
                                     doSearch(item[key], item["source"], index)
                                 })
                                 box.appendChild(btn)
+                                //console.log(box)
                             })
                             td.appendChild(box)
                             break
                         case "source":
-                            const badge = document.createElement("div")
-                            badge.classList.add("badge", item["source"])
-                            badge.innerHTML = item[key].replace(replaceWhitwSpace, " ")
-                            td.appendChild(badge)
-                            break
+                            const badge = document.createElement("div");
+                            badge.classList.add("badge", item["source"]);
+                            badge.innerHTML = item[key].replace(replaceWhitwSpace, " ");
+                            td.appendChild(badge);
+                            break;
                         case "code":
-                            //td.classList.add("high")
-                            td.classList.add(item["source"])
-                            td.innerHTML = item[key]
-                            break
+                            td.classList.add(item["source"]);
+                            td.innerHTML = item[key];
+                            break;
                         case "check":
-                            const btnX = document.createElement("img");
-                            btnX.dataset.code = item['code']
-                            btnX.addEventListener("click", event => {
-                                btnX.src = "./img/checkx1.svg"
-                                btnV.src = "./img/checkv0.svg"
-                                dataPool[item["source"]].forEach(d=>{
-                                    if(d.code == event.target.dataset.code) d.check=1
-                                })
-                            })
-                            const btnV = document.createElement("img");
-                            btnV.dataset.code = item['code']
-                            btnV.addEventListener("click", event => {
-                                btnX.src = "./img/checkx0.svg"
-                                btnV.src = "./img/checkv1.svg"
-                                dataPool[item["source"]].forEach(d=>{
-                                    if(d.code == event.target.dataset.code) d.check=2
-                                })
-                            })
-                            if (item[key] == 1) {
-                                btnX.src = "./img/checkx1.svg"
-                                btnV.src = "./img/checkv0.svg"
-                            } else if (item[key] == 2) {
-                                btnX.src = "./img/checkx0.svg"
-                                btnV.src = "./img/checkv1.svg"
-                            } else {
-                                btnX.src = "./img/checkx0.svg"
-                                btnV.src = "./img/checkv0.svg"
+                            const changeBtnState = (_x,_v, _val)=>{
+                                if (_val == -1) {
+                                    _x.src = "./img/checkx1.svg";
+                                    _v.src = "./img/checkv0.svg";
+                                } else if (_val == 1) {
+                                    _x.src = "./img/checkx0.svg";
+                                    _v.src = "./img/checkv1.svg";
+                                    
+                                } else {
+                                    _x.src = "./img/checkx0.svg";
+                                    _v.src = "./img/checkv0.svg";
+                                }
                             }
-                            td.appendChild(btnX)
-                            td.appendChild(btnV)
-                            break
+                            const btnX = document.createElement("img");
+                            const btnV = document.createElement("img");
 
+                            btnX.dataset.code = item['code'];
+                            btnX.addEventListener("click", event => {
+                                dataPool[item["source"]].forEach(d => {
+                                    if (d.code == event.target.dataset.code) {
+                                        d.check == 0 || d.check == 1?
+                                            d.check =  -1:
+                                            d.check =  0;
+                                        changeBtnState(btnX, btnV, d.check)
+                                    }
+                                });
+                            });
+                            
+                            btnV.dataset.code = item['code'];
+                            btnV.addEventListener("click", event => {
+                                dataPool[item["source"]].forEach(d => {
+                                    if (d.code == event.target.dataset.code) {
+                                        d.check == 0 || d.check == -1?
+                                            d.check =  1:
+                                            d.check =  0;
+                                        changeBtnState(btnX, btnV, d.check)
+                                    }
+                                });
+                            });
+                            changeBtnState(btnX, btnV, item[key])
+                            td.appendChild(btnX);
+                            td.appendChild(btnV);
+                            break;
+                        
+                        /*
                         default:
-                            td.innerHTML = item[key]
+                            td.innerHTML = item[key];
+                        */
                     }
-                    tr.appendChild(td)
+                    tr.appendChild(td);
                 }
-                box.appendChild(tr)
-            })
+                box.appendChild(tr);
+            });
         }
 
-        const tabBox = document.querySelector("#codeCtrl .tabs")
-        for (let key in dataPool) {
-            const btn = document.createElement('button')
-            btn.innerHTML = key.replace("_", " ")
-            btn.classList.add(key)
-            btn.addEventListener('click', () => {
-                const content = document.querySelector("#myArtical .content")
-                content.scrollTo({ top: 0 });
-                content.innerHTML  = org
-
-                tabBox.querySelectorAll("button").forEach(btn => { btn.classList.remove("high") })
-                renderRow(dataPool[key], btn)
-                btn.classList.add("high")
-            })
-            tabBox.appendChild(btn)
-
+        // 查找关键字按钮
+        const findBtns = (keyword) => {
+            const content = document.querySelector("#myArtical .content");
+            content.innerHTML = org;
+            let reg = new RegExp(keyword, 'g');
+            let artical = content.innerHTML;
+            return [...artical.matchAll(reg)];
         }
-        renderRow(dataPool['ICD-10'])
-        tabBox.querySelector("button").classList.add("high")
-    }
 
-    //按鈕『選擇病例』開啟後的視窗
-    const renderCodeList = list => {
-        cleanContainer(".modal.codeList .content .not")
-        cleanContainer(".modal.codeList .content .queue")
-        cleanContainer(".modal.codeList .content .done")
-        list.caseList.map(item => {
-            const caseBtn = document.createElement("button")
-            caseBtn.innerHTML = item.caseName
-            if(CaseID == item.caseName) caseBtn.classList.add("current")
-            switch(parseInt(item.state)){
-                case 0:
-                    caseBtn.classList.add("not")
-                    document.querySelector(".modal.codeList .content .not").appendChild(caseBtn)
-                    break
-                case 1:
-                    caseBtn.classList.add("queue")
-                    document.querySelector(".modal.codeList .content .queue").appendChild(caseBtn)
-                    break
-                case 2:
-                    caseBtn.classList.add("done")
-                    document.querySelector(".modal.codeList .content .done").appendChild(caseBtn)
-                    break
+        // 搜索关键字并高亮显示
+        const doSearch = (keyword, type, index) => {
+            const content = document.querySelector("#myArtical .content");
+            content.innerHTML = org;
+            let artical = content.innerHTML;
+            let reg = new RegExp(keyword, 'gi');
+            let tempA;
+            if (artical.match(reg)) {
+                content.innerHTML = artical.replace(reg, `<span class="mark ${type}">${keyword}</span>`);
+                content.querySelectorAll(".mark").forEach((item, _i) => {
+                    if (_i == index) {
+                        item.classList.add("high");
+                        tempA = content.innerHTML; // 备份
+                        const itemY = item.offsetTop - content.offsetTop;
+                        content.scrollTo({ top: itemY, behavior: 'smooth' });
+                        setTimeout(() => { content.innerHTML = tempA }, 200); // 贴回去
+                    }
+                });
             }
-            caseBtn.addEventListener("click",()=>{
-                //這邊我先做轉跳處理，如果不想用轉跳的方式也可以另外處理～
-                window.open("./?CaseID="+item.caseName,"_self")
+        }
+
+        // 渲染标签
+        const tabBox = document.querySelector("#codeCtrl .tabs");
+        cleanContainer("#codeCtrl .tabs");
+        for (let key in dataPool) {
+            const btn = document.createElement('button');
+            btn.innerHTML = key.replace("_", " ");
+            btn.classList.add(key);
+            btn.addEventListener('click', () => {
+                const content = document.querySelector("#myArtical .content");
+                content.scrollTo({ top: 0 });
+                content.innerHTML = org;
+
+                tabBox.querySelectorAll("button").forEach(btn => { btn.classList.remove("high") });
+                renderRow(dataPool[key], btn);
+                btn.classList.add("high");
+            });
+            tabBox.appendChild(btn);
+        }
+
+        // 默认渲染第一个标签
+        const firstSource = Object.keys(dataPool)[0];
+        if (firstSource) {
+            renderRow(dataPool[firstSource]);
+            tabBox.querySelector("button").classList.add("high");
+        }
+    }
+
+    // 渲染病例列表
+    const renderCodeList = list => {
+        cleanContainer(".modal.codeList .content .not");
+        cleanContainer(".modal.codeList .content .queue");
+        cleanContainer(".modal.codeList .content .done");
+        list.caseList.map(item => {
+            const caseBtn = document.createElement("button");
+            caseBtn.innerHTML = item.case;
+            if (CaseID == item.case) caseBtn.classList.add("current");
+            switch (parseInt(item.state)) {
+                case 0:
+                    caseBtn.classList.add("not");
+                    document.querySelector(".modal.codeList .content .not").appendChild(caseBtn);
+                    break;
+                case 1:
+                    caseBtn.classList.add("queue");
+                    document.querySelector(".modal.codeList .content .queue").appendChild(caseBtn);
+                    break;
+                case 2:
+                    caseBtn.classList.add("done");
+                    document.querySelector(".modal.codeList .content .done").appendChild(caseBtn);
+                    break;
+            }
+            caseBtn.addEventListener("click", () => {
+                // 重新加载页面并传递新的 CaseID
+                window.location.href = `./?CaseID=${item.case}&ProjectID=${ProjectID}`;
             })
         })
     }
 
-    //送出已經編輯的資料
-    const sendData = ()=>{
-        let collectData=[];//要送出的審核資料
-        for(let key in dataPool){
-            dataPool[key].map(item=>{
-                collectData.push({code:item.code, check:item.check})
-            })
-        }        
-        //模擬送出
-        if(confirm("模擬送出")){
-            console.log(collectData) // <=這包就是已經編輯完後的資料
+    // 发送已编辑的数据到 API
+    const sendData = () => {
+        let paragraphsData = [];
+        for (let key in dataPool) {
+            paragraphsData.push({
+                "type": key, // 根据实际的段落类型调整
+                "code_list": dataPool[key].map(item => ({
+                    "source": item.source,
+                    "code": item.code,
+                    "check": item.check, // 0未处理, -1错误, 1正确
+                    "insurance_related": item.insurance_related || 0 // 如果未设置，默认为0
+                }))
+            });
         }
-    } 
 
-    //所有按鈕初始設定
-    const buttonsSetting =(config)=>{ 
-        document.querySelector(".caselist").addEventListener("click", ()=>{
-            document.querySelector(".modal.codeList").classList.remove("close")
-            //contentLoader(`${config.API_PATH}/GetCaseListByProjectID` ).then(res=>{
-            contentLoader("./js/GetCaseListByProjectID.json" ).then(res=>{ //測試用
-                renderCodeList(res)
-            })            
+        let payload = {
+            "project_id": ProjectID,
+            "case": CaseID,
+            "paragraphs": paragraphsData
+        };
+
+        // 发送数据到 API
+        contentLoader(
+            `${config.API_PATH}/code/status`,
+            payload
+        )
+        .then(response => {
+            if (response.meta && response.meta.code === 200) {
+                console.log("数据提交成功");
+                // 根据需要处理响应
+            } else {
+                throw new Error("数据提交失败");
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            // 错误处理
+        })
+    }
+
+    // 设置按钮和事件处理程序
+    const buttonsSetting = (config) => {
+        // 打开病例列表
+        document.querySelector(".caselist").addEventListener("click", () => {
+            document.querySelector(".modal.codeList").classList.remove("close");
+            contentLoader(
+                `${config.API_PATH}/case/list`,
+                {
+                    "project_id": ProjectID,
+                    "page": 1,
+                    "page_size": 20
+                }
+            )
+            .then(res => {
+                if (res.meta && res.meta.code === 200) {
+                    renderCodeList(res);
+                } else {
+                    throw new Error("加载病例列表失败");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                // 错误处理
+            })
         })
 
-        document.querySelectorAll(".modal .closeBtn").forEach(closeBtn=>{
-            closeBtn.addEventListener("click", ()=>{
-                document.querySelectorAll(".modal").forEach(modal=>{
-                    modal.classList.add("close")
+        // 关闭模态框
+        document.querySelectorAll(".modal .closeBtn").forEach(closeBtn => {
+            closeBtn.addEventListener("click", () => {
+                document.querySelectorAll(".modal").forEach(modal => {
+                    modal.classList.add("close");
                 })
             })
         })
 
-        //開啟送出資料視窗
-        document.querySelector(".nav .send").addEventListener("click", ()=>{
-            document.querySelector(".modal.sendCheck").classList.remove("close")
+        // 打开发送数据的模态框
+        document.querySelector(".nav .send").addEventListener("click", () => {
+            document.querySelector(".modal.sendCheck").classList.remove("close");
         })
 
-        //送出資料
-        document.querySelector(".doSend").addEventListener("click", ()=>{
-            document.querySelector(".modal.sendCheck").classList.add("close")
-            sendData()
+        // 发送数据
+        document.querySelector(".doSend").addEventListener("click", () => {
+            document.querySelector(".modal.sendCheck").classList.add("close");
+            sendData();
         })
     }
 
-    //文章語系切換設定
-    const changeArticalLang =(artical)=>{
+    // 文章语言切换设置
+    const changeArticalLang = artical => {
         let sw = true;
         const changeArtical = (lang) => {
             if (lang == "CHT") {
-                document.querySelector("#myArtical .content").innerHTML = artical.CHT.replace(replaceWhitwSpace, " ")
-                org = artical.CHT
+                document.querySelector("#myArtical .content").innerHTML = artical.paragraphs.map(p => p.cht).join('<br><br>');
+                org = artical.paragraphs.map(p => p.cht).join('<br><br>');
             } else {
-                document.querySelector("#myArtical .content").innerHTML = artical.ENG.replace(replaceWhitwSpace, " ")
-                org = artical.ENG
+                document.querySelector("#myArtical .content").innerHTML = artical.paragraphs.map(p => p.eng).join('<br><br>');
+                org = artical.paragraphs.map(p => p.eng).join('<br><br>');
             }
         }
-        changeArtical(sw ? "ENG" : "CHT")
+        changeArtical(sw ? "ENG" : "CHT");
         document.querySelector("#myArtical .switch input").addEventListener("click", e => {
-            sw = !sw
-            changeArtical(sw ? "ENG" : "CHT")
+            sw = !sw;
+            changeArtical(sw ? "ENG" : "CHT");
         })
     }
 
-    //init 進入點
+    // 初始化
     document.addEventListener("DOMContentLoaded", () => {
-        document.querySelector(".nav span.caseID").innerHTML = CaseID
-        document.querySelector("header span.projectID").innerHTML = ProjectID
-        //讀取設定檔
+        document.querySelector(".nav span.caseID").innerHTML = CaseID;
+        document.querySelector("header span.projectID").innerHTML = ProjectID;
+        // 加载配置文件
         loadConfig().then(res => {
-            config = res
-            buttonsSetting(config)
-            //return contentLoader(`${config.API_PATH}/GetCaseContent`)
-            return contentLoader("./js/GetCaseContent.json")//測試用
+            config = res;
+            buttonsSetting(config);
+            // 获取病例内容
+           // const testa= config["test a"]
+           // document.querySelector(".nav span.caseID").innerHTML = testa
+           return contentLoader("./js/GetCaseContent.json")//測試用
+            return contentLoader(
+                `${config.API_PATH}/case/content`,
+                {
+                    "project_id": ProjectID,
+                    "case": CaseID
+                }
+            )
         }).then(artical => {
-            changeArticalLang(artical)
-            //return contentLoader(`${config.API_PATH}/GetCaseDetail`)
-            return contentLoader("./js/GetCaseDetail.json")//測試用
+            if (artical.meta && artical.meta.code === 200) {
+                changeArticalLang(artical);
+                // 获取病例详细信息
+                return contentLoader("./js/GetCaseDetail.json")//測試用
+                return contentLoader(
+                    `${config.API_PATH}/case/detail`,
+                    {
+                        "project_id": ProjectID,
+                        "case": CaseID
+                    }
+                )
+            } else {
+                throw new Error("加载病例内容失败");
+            }
         }).then(items => {
-            renderCodePanel(items)
+            if (items.meta && items.meta.code === 200) {
+                renderCodePanel(items);
+                //console.log(items)
+            } else {
+                throw new Error("加载病例详细信息失败");
+            }
+        }).catch(error => {
+            console.error(error);
+            // 错误处理
         })
     })
 })()

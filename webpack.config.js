@@ -135,6 +135,7 @@ module.exports = (env, options) => {
             ],
         },
         devServer: {
+            server: 'https',
             hot: true,
             port: 11291
         },

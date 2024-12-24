@@ -1,17 +1,89 @@
 {
-    "case":"ec36",
-    "codelist":[
-        {"source":"ICD-10", "code":"821156008", "codename":"名稱1", "spantxt":"Presentillness", "confidence":1, "check":0},
-        {"source":"SNOMED_CT", "code":"721156000", "codename":"名稱2", "spantxt":"Temperature", "confidence":1, "check":1},
-        {"source":"RxNorm", "code":"6211560021", "codename":"名稱3", "spantxt":"Rate", "confidence":1, "check":2},
-        {"source":"LONIC", "code":"521156928", "codename":"名稱4", "spantxt":"Symmetric", "confidence":1, "check":0},
-        {"source":"ICD-10", "code":"156008222", "codename":"名稱5", "spantxt":"Pressure", "confidence":1, "check":1},
-        {"source":"SNOMED_CT", "code":"182215602", "codename":"名稱6", "spantxt":"side ", "confidence":1, "check":2},
-        {"source":"RxNorm", "code":"331822156", "codename":"名稱7", "spantxt":"eye", "confidence":1, "check":0},
-        {"source":"LONIC", "code":"728195291", "codename":"名稱8", "spantxt":"Supple", "confidence":1, "check":0},
-        {"source":"RxNorm", "code":"529142831", "codename":"名稱9", "spantxt":"Retinal", "confidence":1, "check":0},
-        {"source":"LONIC", "code":"454195291", "codename":"名稱10", "spantxt":"Heart", "confidence":1, "check":0},
-        {"source":"ICD-10", "code":"5698362919", "codename":"名稱11", "spantxt":"Neck", "confidence":1, "check":0},
-        {"source":"ICD-10", "code":"0217211560", "codename":"名稱12", "spantxt":"Rate", "confidence":1, "check":0}
-    ]
+    "case": "0001",
+    "meta": {
+        "code": 200,
+        "description": "Case detail retrieved successfully.",
+        "message": "Success"
+    },
+    "paragraphs": [
+        {
+            "code_list": [
+                {
+                    "check": 0,
+                    "code": "29857009",
+                    "code_name": "Chest Pain",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "SNOMEDCT_US",
+                    "span_txt": "chest pain"
+                },
+                {
+                    "check": 0,
+                    "code": "267036007",
+                    "code_name": "Shortness of Breath",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "SNOMEDCT_US",
+                    "span_txt": "shortness of breath"
+                },
+                {
+                    "check": 0,
+                    "code": "29753000",
+                    "code_name": "Dizziness",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "SNOMEDCT_US",
+                    "span_txt": "dizziness"
+                }
+            ],
+            "type": "EmergencyRecord"
+        },
+        {
+            "code_list": [
+                {
+                    "check": 0,
+                    "code": "271442007",
+                    "code_name": "Syncope",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "SNOMEDCT_US",
+                    "span_txt": "syncope"
+                },
+                {
+                    "check": 0,
+                    "code": "89857001",
+                    "code_name": "Electrocardiogram abnormal",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "SNOMEDCT_US",
+                    "span_txt": "ECG showed abnormal results"
+                }
+            ],
+            "type": "HospitalRecord"
+        },
+        {
+            "code_list": [
+                {
+                    "check": 0,
+                    "code": "6690-2",
+                    "code_name": "Leukocytes [#/volume] in Blood",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "LOINC",
+                    "span_txt": "elevated white blood cell count"
+                },
+                {
+                    "check": 0,
+                    "code": "718-7",
+                    "code_name": "Hemoglobin [Mass/volume] in Blood",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "LOINC",
+                    "span_txt": "low hemoglobin"
+                }
+            ],
+            "type": "LaboratoryRecord"
+        }
+    ],
+    "project_id": "3c6f8010-ef70-4331-9888-fd5bc526be38"
 }
