@@ -32,7 +32,7 @@ module.exports = (env, options) => {
         },
         module: {
             rules: [
-               
+
                 {
                     test: /\.css$/i,
                     use: [
@@ -99,7 +99,7 @@ module.exports = (env, options) => {
                     ]
                 },*/
                 {
-                    test: /\.s[ac]ss$/i,
+                    test: /(\.s[ac]ss$)/i,
                     use: [
                         // Creates `style` nodes from JS strings
                         options.mode == "production" ? MiniCssExtractPlugin.loader : "style-loader",
@@ -115,6 +115,10 @@ module.exports = (env, options) => {
                     ],
                 },
                 {
+                    test: /\.css$/i,
+                    use: ["style-loader", "css-loader"],
+                },
+                {
                     test: /\.pug$/,
                     use: [
                         {
@@ -126,12 +130,24 @@ module.exports = (env, options) => {
                             // 不壓縮 HTML
                         }, {
                             loader: 'pug-html-loader',
-                            options: { 
+                            options: {
                                 pretty: false
                             }
                         }
                     ]
-                }
+                },
+                {
+                    test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[name][hash].[ext]',
+                                outputPath: '/css/webfont',
+                            },
+                        },
+                    ],
+                },
             ],
         },
         devServer: {
@@ -143,15 +159,15 @@ module.exports = (env, options) => {
         plugins: [
             new CleanWebpackPlugin({}),
             new webpack.HotModuleReplacementPlugin(),
-            new HtmlWebpackPlugin({ 
+            new HtmlWebpackPlugin({
                 filename: 'index.html',
                 title: "bike",
                 template: 'src/pug/index.pug',
                 inject: "body",
-                chunks: ['index','main'],                
+                chunks: ['index', 'main'],
             }),
             //new HtmlWebpackPlugin({ filename: 'index.html', title: "wade", template: 'src/index.html', inject: "head", chunks: ['index']/*, meta: metas, ...propertys }*/ }),
-        
+
             new MiniCssExtractPlugin({
                 //filename: 'css/[name].[hash].css',
                 filename: 'css/[name].css',
@@ -163,10 +179,10 @@ module.exports = (env, options) => {
                 patterns: [
                     { from: "./src/js", to: "js" },
                     { from: "./src/img", to: "img" },
-                    //{ from: "./src/mp3", to: "mp3" }
+                    { from: "./src/webfonts", to: "webfonts" },
                 ],
             }),
-            
+
             /* 轉 Webp 用的
             new ImageminWebpWebpackPlugin({
                 config: [{
@@ -182,11 +198,11 @@ module.exports = (env, options) => {
             })*/
         ],
         optimization: {
-            
+
             minimizer: [
                 //new HtmlMinimizerPlugin(),
                 //new CssMinimizerPlugin(),  
-                                            
+
                 new TerserPlugin({
                     //extractComments: 'all',
                     test: /\index.js(\?.*)?$/i,

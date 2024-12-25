@@ -4,8 +4,11 @@
 //@use "./table" as tc
 
 $imgPath:"../img/"
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Noto+Sans+TC:wght@100;300;400;500;700;900&display=swap')
-//@import url('./config.sass')
+
+@import url('./all.min.css')
+
 
 /*
     $lineColor: #DADADA 
@@ -14,6 +17,8 @@ $imgPath:"../img/"
     $snomedct: #FF877A
     $rxnorm: #07B5D3
     $lonic: #0098F0
+
+
 
 
 
@@ -125,6 +130,10 @@ body
             .content
                 overflow-y: auto
                 height: 500px
+               
+
+                .ENG.close, .CHT.close
+                    display: none
                 span
                     &.mark
                         background-color: yellow
@@ -144,25 +153,61 @@ body
         #codeCtrl
            
             @include PanelConfig()
-            .tabs
-                border-bottom: 1px solid config.$lineColor 
+            #focus
+                position: relative
+                &::before, &::after
+                    position: absolute
+                    content: " "
+                    top: 8px
+                &::before 
+                    border-width: 6px
+                    right: 2px
+                    border-style: solid
+                    border-color:#666 transparent transparent  transparent
+                &::after
+                    right: 4px
+                    border-width: 4px
+                    border-style: solid
+                    border-color:#fff transparent transparent  transparent
+                &.close::before
+                    transform: rotate(180deg)
+                    top: 2px
+                &.close::after
+                    top: 6px
+                    transform: rotate(180deg)
+            .headerBox
+                display: flex
+                justify-content: space-between
 
-                button
-                    font-size: 14px
-                    font-weight: 700
-                    background: none 
-                    border: none 
-                    background-color: #AEAFB0
-                    color: #fff
-                    border-top-left-radius: 10px
-                    border-top-right-radius: 10px
-                    padding: 10px
-                    margin: 0 5px
-                    transition: .4s
-                    &.high
-                        @include typesBG()
+                .tabs
+                    border-bottom: 1px solid config.$lineColor 
+                    
 
-        
+                    button
+                        font-size: 14px
+                        font-weight: 700
+                        background: none 
+                        border: none 
+                        background-color: #AEAFB0
+                        color: #fff
+                        border-top-left-radius: 10px
+                        border-top-right-radius: 10px
+                        padding: 10px
+                        margin: 0 5px
+                        transition: .4s
+                        &.high
+                            @include typesBG()
+                select
+                    width: 160px
+                    height: 34px
+                    background: none
+                    border-radius:0
+                    border: 1px solid #1855be
+                    appearance: none
+                    padding: 8px
+                    color: #1855be
+                    option
+                        color: #1855be
             table
                 width:  100%
                 border-collapse: collapse
@@ -194,6 +239,10 @@ body
                                 font-size: 14px
                                 font-weight: 600
                                 @include typesBG()
+                            i
+                                &.fa-eye-slash
+                                    transform: scaleX(-1)
+                                @include typesTxt()
                             
                             img
                                 transition: .2s
@@ -215,7 +264,7 @@ body
                                 text-align: center
                                 min-width: 80px
 
-                                
+                            
                                 
             .spanTxtBox
                 display: flex

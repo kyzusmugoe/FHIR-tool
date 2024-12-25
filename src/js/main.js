@@ -115,21 +115,23 @@
                 tr.style.animationDelay = `${sn * 100}ms`;
                 // 第一列
                 const td = document.createElement("td");
-                const eye = document.createElement("img");
-                eye.classList.add("eye")
+                const eye = document.createElement("i");
+                eye.classList.add("eye", item["source"])
                 eye.dataset.code = item['code'];
-                eye.src = item.eye == 0 ? "./img/eye0.svg" : "./img/eye1.svg";
+                item.eye == 0 ?  eye.classList.add("fa-regular", "fa-eye-slash") :  eye.classList.add("fa-regular", "fa-eye");
                 eye.addEventListener("click", event => {
                     findObj(item["source"], event.target.dataset.code, res => {
                         if (res.eye == 0) {
                             res.eye = 1;
-                            event.target.src = "./img/eye1.svg";
+                            eye.classList.remove("fa-eye-slash") 
+                            eye.classList.add("fa-eye") 
                             document.querySelectorAll(`#myArtical .content .mark.code${event.target.dataset.code}`).forEach(mark => {
                                 mark.classList.remove("close")
                             })
                         } else {
                             res.eye = 0;
-                            event.target.src = "./img/eye0.svg";
+                            eye.classList.remove("fa-eye")
+                            eye.classList.add("fa-eye-slash") 
                             document.querySelectorAll(`#myArtical .content .mark.code${event.target.dataset.code}`).forEach(mark => {
                                 mark.classList.add("close")
                             })
@@ -157,7 +159,8 @@
                                     doSearch(item[key], item["source"], index)
                                     findObj(item["source"], event.target.dataset.code, (d) => {
                                         d.eye = 1;
-                                        eye.src = "./img/eye1.svg";
+                                        eye.classList.remove("fa-eye-slash")
+                                        eye.classList.add("fa-eye") 
                                     })
                                 })
                                 box.appendChild(btn)
@@ -216,7 +219,10 @@
                         default:
                             td.innerHTML = item[key];
                     }
-                    if (key != "eye") {
+
+                    //暫時隱藏不需顯示的欄位
+                    if (key == "eye" || key=="insurance_related") {
+                    }else{
                         tr.appendChild(td);
                     }
                 }
@@ -226,7 +232,7 @@
 
         // 查找关键字按钮
         const findBtns = (keyword) => {
-            const content = document.querySelector("#myArtical .content");
+            const content = document.querySelector("#myArtical .content .ENG");
             //content.innerHTML = org;
             let reg = new RegExp(keyword, 'g');
             let artical = content.innerHTML;
@@ -235,7 +241,7 @@
 
         //標記所有關鍵字
         spantxtBox.map(item => {
-            const content = document.querySelector("#myArtical .content");
+            const content = document.querySelector("#myArtical .content .ENG");
             let artical = content.innerHTML;
             let reg = new RegExp(item.span_txt, 'gi');
             let tempA;
@@ -248,7 +254,7 @@
         const doSearch = (keyword, source, index) => {
             document.querySelectorAll(`.mark.${source}`).forEach(item => {
                 if (item.innerHTML == keyword) {
-                    const content = document.querySelector("#myArtical .content");
+                    const content = document.querySelector("#myArtical .content .ENG");
                     const itemY = item.offsetTop - content.offsetTop;
                     content.scrollTo({ top: itemY, behavior: 'smooth' });
                     item.classList.remove("close")
@@ -264,10 +270,7 @@
             btn.innerHTML = key.replace("_", " ");
             btn.classList.add(key);
             btn.addEventListener('click', () => {
-                //const content = document.querySelector("#myArtical .content");
-                //content.scrollTo({ top: 0 });
-                //content.innerHTML = org;
-
+                //const content = document.querySelector("#myArtical .content").scrollTo({ top: 0 });
                 tabBox.querySelectorAll("button").forEach(btn => { btn.classList.remove("high") });
                 renderRow(dataPool[key], btn);
                 btn.classList.add("high");
@@ -281,6 +284,26 @@
             renderRow(dataPool[firstSource]);
             tabBox.querySelector("button").classList.add("high");
         }
+
+        //點選focus眼睛全部開/關
+        document.querySelector("#focus").addEventListener("click",event=>{
+            event.target.classList.toggle("close")
+            if( event.target.classList.contains("close")){
+                document.querySelectorAll("#codeRow i.eye").forEach(eye=>{
+                    eye.classList.remove("fa-eye") 
+                    eye.classList.add("fa-eye-slash") 
+                })
+                document.querySelectorAll("#myArtical .content .ENG .mark").forEach(mark=>{mark.classList.add("close")})
+                for(key in dataPool ){ dataPool[key].map(item=>{item.eye = 0}) }
+            }else{
+                document.querySelectorAll("#codeRow i.eye").forEach(eye=>{
+                    eye.classList.remove("fa-eye-slash") 
+                    eye.classList.add("fa-eye") 
+                })
+                document.querySelectorAll("#myArtical .content .ENG .mark").forEach(mark=>{mark.classList.remove("close")})
+                for(key in dataPool ){ dataPool[key].map(item=>{item.eye = 1}) }
+            }
+        })
     }
 
     // 渲染病例列表
@@ -403,13 +426,17 @@
     // 文章语言切换设置
     const changeArticalLang = artical => {
         let sw = true;
+        const _cht = document.querySelector("#myArtical .content .CHT")
+        const _eng = document.querySelector("#myArtical .content .ENG")
+        _cht.innerHTML = artical.paragraphs.map(p => p.cht).join('<br><br>');
+        _eng.innerHTML = artical.paragraphs.map(p => p.eng).join('<br><br>');
         const changeArtical = (lang) => {
             if (lang == "CHT") {
-                document.querySelector("#myArtical .content").innerHTML = artical.paragraphs.map(p => p.cht).join('<br><br>');
-                org = artical.paragraphs.map(p => p.cht).join('<br><br>');
+                _cht.classList.remove("close")
+                _eng.classList.add("close")
             } else {
-                document.querySelector("#myArtical .content").innerHTML = artical.paragraphs.map(p => p.eng).join('<br><br>');
-                org = artical.paragraphs.map(p => p.eng).join('<br><br>');
+                _cht.classList.add("close")
+                _eng.classList.remove("close")
             }
         }
         changeArtical(sw ? "ENG" : "CHT");
@@ -428,9 +455,7 @@
             config = res;
             buttonsSetting(config);
             // 获取病例内容
-            // const testa= config["test a"]
-            // document.querySelector(".nav span.caseID").innerHTML = testa
-            //return contentLoader("./js/GetCaseContent.json")//測試用
+            return contentLoader("./js/GetCaseContent.json")//測試用
             return contentLoader(
                 `${config.API_PATH}/case/content`,
                 {
@@ -442,7 +467,7 @@
             if (artical.meta && artical.meta.code === 200) {
                 changeArticalLang(artical);
                 // 获取病例详细信息
-                //return contentLoader("./js/GetCaseDetail.json")//測試用
+                return contentLoader("./js/GetCaseDetail.json")//測試用
                 return contentLoader(
                     `${config.API_PATH}/case/detail`,
                     {
@@ -456,13 +481,11 @@
         }).then(items => {
             if (items.meta && items.meta.code === 200) {
                 renderCodePanel(items);
-                //console.log(items)
             } else {
                 throw new Error("加载病例详细信息失败");
             }
         }).catch(error => {
             console.error(error);
-            // 错误处理
         })
     })
 })()
