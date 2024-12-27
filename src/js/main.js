@@ -47,7 +47,7 @@
                     'Content-Type': 'application/json'
                     // 如果需要其他头信息，可以在这里添加
                 },
-                body: JSON.stringify(params)
+                //body: JSON.stringify(params)
             }).then(response => {
                 if (response.ok) {
                     return response.json();
@@ -62,6 +62,20 @@
                 reject(error);
             })
         })
+    }
+
+    // 正確與錯誤的總數量
+    const renderTotalRW =()=>{
+        let right=0;
+        let wrong=0;
+        for(let key in dataPool){
+            dataPool[key].map(item=>{
+                item.check == 1  && right++
+                item.check == -1 && wrong++
+            })
+        }
+        document.querySelector(".nav  span.right").innerHTML= right
+        document.querySelector(".nav  span.wrong").innerHTML= wrong
     }
 
     // 设置右侧功能栏
@@ -118,20 +132,20 @@
                 const eye = document.createElement("i");
                 eye.classList.add("eye", item["source"])
                 eye.dataset.code = item['code'];
-                item.eye == 0 ?  eye.classList.add("fa-regular", "fa-eye-slash") :  eye.classList.add("fa-regular", "fa-eye");
+                item.eye == 0 ? eye.classList.add("fa-regular", "fa-eye-slash") : eye.classList.add("fa-regular", "fa-eye");
                 eye.addEventListener("click", event => {
                     findObj(item["source"], event.target.dataset.code, res => {
                         if (res.eye == 0) {
                             res.eye = 1;
-                            eye.classList.remove("fa-eye-slash") 
-                            eye.classList.add("fa-eye") 
+                            eye.classList.remove("fa-eye-slash")
+                            eye.classList.add("fa-eye")
                             document.querySelectorAll(`#myArtical .content .mark.code${event.target.dataset.code}`).forEach(mark => {
                                 mark.classList.remove("close")
                             })
                         } else {
                             res.eye = 0;
                             eye.classList.remove("fa-eye")
-                            eye.classList.add("fa-eye-slash") 
+                            eye.classList.add("fa-eye-slash")
                             document.querySelectorAll(`#myArtical .content .mark.code${event.target.dataset.code}`).forEach(mark => {
                                 mark.classList.add("close")
                             })
@@ -160,7 +174,7 @@
                                     findObj(item["source"], event.target.dataset.code, (d) => {
                                         d.eye = 1;
                                         eye.classList.remove("fa-eye-slash")
-                                        eye.classList.add("fa-eye") 
+                                        eye.classList.add("fa-eye")
                                     })
                                 })
                                 box.appendChild(btn)
@@ -201,6 +215,7 @@
                                         d.check = 0;
                                     changeBtnState(btnX, btnV, d.check)
                                 })
+                                renderTotalRW()
                             });
 
                             btnV.dataset.code = item['code'];
@@ -211,6 +226,7 @@
                                         d.check = 0;
                                     changeBtnState(btnX, btnV, d.check)
                                 })
+                                renderTotalRW()
                             });
                             changeBtnState(btnX, btnV, item[key])
                             td.appendChild(btnX);
@@ -221,8 +237,8 @@
                     }
 
                     //暫時隱藏不需顯示的欄位
-                    if (key == "eye" || key=="insurance_related") {
-                    }else{
+                    if (key == "eye" || key == "insurance_related") {
+                    } else {
                         tr.appendChild(td);
                     }
                 }
@@ -286,22 +302,22 @@
         }
 
         //點選focus眼睛全部開/關
-        document.querySelector("#focus").addEventListener("click",event=>{
+        document.querySelector("#focus").addEventListener("click", event => {
             event.target.classList.toggle("close")
-            if( event.target.classList.contains("close")){
-                document.querySelectorAll("#codeRow i.eye").forEach(eye=>{
-                    eye.classList.remove("fa-eye") 
-                    eye.classList.add("fa-eye-slash") 
+            if (event.target.classList.contains("close")) {
+                document.querySelectorAll("#codeRow i.eye").forEach(eye => {
+                    eye.classList.remove("fa-eye")
+                    eye.classList.add("fa-eye-slash")
                 })
-                document.querySelectorAll("#myArtical .content .ENG .mark").forEach(mark=>{mark.classList.add("close")})
-                for(key in dataPool ){ dataPool[key].map(item=>{item.eye = 0}) }
-            }else{
-                document.querySelectorAll("#codeRow i.eye").forEach(eye=>{
-                    eye.classList.remove("fa-eye-slash") 
-                    eye.classList.add("fa-eye") 
+                document.querySelectorAll("#myArtical .content .ENG .mark").forEach(mark => { mark.classList.add("close") })
+                for (key in dataPool) { dataPool[key].map(item => { item.eye = 0 }) }
+            } else {
+                document.querySelectorAll("#codeRow i.eye").forEach(eye => {
+                    eye.classList.remove("fa-eye-slash")
+                    eye.classList.add("fa-eye")
                 })
-                document.querySelectorAll("#myArtical .content .ENG .mark").forEach(mark=>{mark.classList.remove("close")})
-                for(key in dataPool ){ dataPool[key].map(item=>{item.eye = 1}) }
+                document.querySelectorAll("#myArtical .content .ENG .mark").forEach(mark => { mark.classList.remove("close") })
+                for (key in dataPool) { dataPool[key].map(item => { item.eye = 1 }) }
             }
         })
     }
@@ -316,23 +332,25 @@
             caseBtn.innerHTML = item.case;
             if (CaseID == item.case) caseBtn.classList.add("current");
             switch (parseInt(item.state)) {
-                case 0:
+                case -1:
                     caseBtn.classList.add("not");
                     document.querySelector(".modal.codeList .content .not").appendChild(caseBtn);
                     break;
-                case 1:
+                case 0:
                     caseBtn.classList.add("queue");
                     document.querySelector(".modal.codeList .content .queue").appendChild(caseBtn);
                     break;
-                case 2:
+                case 1:
                     caseBtn.classList.add("done");
                     document.querySelector(".modal.codeList .content .done").appendChild(caseBtn);
                     break;
             }
-            caseBtn.addEventListener("click", () => {
-                // 重新加载页面并传递新的 CaseID
-                window.location.href = `./?CaseID=${item.case}&ProjectID=${ProjectID}`;
-            })
+            if(item.state !=0){
+                caseBtn.addEventListener("click", () => {
+                    // 重新加载页面并传递新的 CaseID
+                    window.location.href = `./?CaseID=${item.case}&ProjectID=${ProjectID}`;
+                })
+            }
         })
     }
 
@@ -365,41 +383,76 @@
             .then(response => {
                 if (response.meta && response.meta.code === 200) {
                     console.log("数据提交成功");
-                    // 根据需要处理响应
                 } else {
                     throw new Error("数据提交失败");
                 }
             })
             .catch(error => {
                 console.error(error);
-                // 错误处理
             })
     }
 
+    
+
     // 设置按钮和事件处理程序
     const buttonsSetting = (config) => {
-        // 打开病例列表
-        document.querySelector(".caselist").addEventListener("click", () => {
-            document.querySelector(".modal.codeList").classList.remove("close");
+
+        //下一筆
+        document.querySelector(".nextCase").addEventListener("click", () => {
             contentLoader(
-                `${config.API_PATH}/case/list`,
+                //`${config.API_PATH}/case/list`,
+                "./js/GetCaseListByProjectID.json",
                 {
                     "project_id": ProjectID,
                     "page": 1,
                     "page_size": 20
                 }
             )
-                .then(res => {
-                    if (res.meta && res.meta.code === 200) {
-                        renderCodeList(res);
-                    } else {
-                        throw new Error("加载病例列表失败");
+            .then(res => {
+                let _current;
+                let _findCase;
+                res.caseList.map(item=>{
+                    if(_current && !_findCase && _current.state == item.state) _findCase = item.case; 
+                    if(item.case == CaseID) _current = item;
+                })
+                if(!_findCase){
+                    for(let i=0; i<res.caseList.length; i++){
+                        console.log(i)
+                        if(res.caseList[i].state == _current.state){
+                            _findCase = res.caseList[i].case
+                            break
+                        }
                     }
-                })
-                .catch(error => {
-                    console.error(error);
-                    // 错误处理
-                })
+                }
+                window.location.href = `./?CaseID=${_findCase}&ProjectID=${ProjectID}`;
+            })
+            .catch(error => {
+                console.error(error);
+            })
+        })
+
+        // 打开病例列表
+        document.querySelector(".caselist").addEventListener("click", () => {
+            document.querySelector(".modal.codeList").classList.remove("close");
+            contentLoader(
+                //`${config.API_PATH}/case/list`,
+                "./js/GetCaseListByProjectID.json",
+                {
+                    "project_id": ProjectID,
+                    "page": 1,
+                    "page_size": 20
+                }
+            )
+            .then(res => {
+                if (res.meta && res.meta.code === 200) {
+                    renderCodeList(res);
+                } else {
+                    throw new Error("加载病例列表失败");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            })
         })
 
         // 关闭模态框
@@ -421,6 +474,8 @@
             document.querySelector(".modal.sendCheck").classList.add("close");
             sendData();
         })
+
+        
     }
 
     // 文章语言切换设置
@@ -481,6 +536,7 @@
         }).then(items => {
             if (items.meta && items.meta.code === 200) {
                 renderCodePanel(items);
+                renderTotalRW()
             } else {
                 throw new Error("加载病例详细信息失败");
             }

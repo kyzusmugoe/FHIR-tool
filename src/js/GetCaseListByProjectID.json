@@ -1,11 +1,62 @@
 {
-    "caseList":[ 
-        {"caseName":"4804", "state":0},
-        {"caseName":"ec36", "state":1},
-        {"caseName":"dfa0", "state":2},
-        {"caseName":"8423", "state":0},
-        {"caseName":"ab84", "state":1},
-        {"caseName":"grg2", "state":2}
+    "meta": {
+        "code": 200,
+        "message": "Success",
+        "description": "Case list retrieved successfully.",
+        "total": 0,
+        "page": 0,
+        "page_size": 0,
+        "total_pages": 0
+    },
+    "caseList": [
+        {
+            "case": "0001",
+            "state": 1
+        },{
+            "case": "0002",
+            "state": -1
+        },{
+            "case": "0003",
+            "state": 0
+        },{
+            "case": "0004",
+            "state": 1
+        },{
+            "case": "0005",
+            "state": 1
+        },{
+            "case": "0006",
+            "state": 0
+        },{
+            "case": "0007",
+            "state": -1
+        },{
+            "case": "0008",
+            "state": -1
+        },{
+            "case": "0009",
+            "state": 0
+        },{
+            "case": "0010",
+            "state": 0
+        },{
+            "case": "0011",
+            "state": 1
+        },{
+            "case": "0012",
+            "state": 0
+        },{
+            "case": "0013",
+            "state": -1
+        },{
+            "case": "0014",
+            "state": -1
+        },{
+            "case": "0015",
+            "state": 0
+        },{
+            "case": "0016",
+            "state": 0
+        }
     ]
 }
-    
