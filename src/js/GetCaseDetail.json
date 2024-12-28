@@ -15,16 +15,18 @@
                     "confidence": 0.9,
                     "insurance_related": 0,
                     "source": "SNOMEDCT_US",
-                    "span_txt": "chest pain"
+                    "span_txt": "chest pain",
+                    "edit":1
                 },
                 {
                     "check": 0,
                     "code": "267036007",
                     "code_name": "Shortness of Breath",
                     "confidence": 0.9,
-                    "insurance_related": 0,
+                    "insurance_related": 1,
                     "source": "SNOMEDCT_US",
-                    "span_txt": "shortness of breath"
+                    "span_txt": "shortness of breath",
+                    "edit":1
                 },
                 {
                     "check": 0,
@@ -33,7 +35,8 @@
                     "confidence": 0.9,
                     "insurance_related": 0,
                     "source": "SNOMEDCT_US",
-                    "span_txt": "dizziness"
+                    "span_txt": "dizziness",
+                    "edit":1
                 }
             ],
             "type": "EmergencyRecord"
@@ -47,7 +50,8 @@
                     "confidence": 0.9,
                     "insurance_related": 0,
                     "source": "SNOMEDCT_US",
-                    "span_txt": "syncope"
+                    "span_txt": "syncope",
+                    "edit":0
                 },
                 {
                     "check": 0,
@@ -56,7 +60,8 @@
                     "confidence": 0.9,
                     "insurance_related": 0,
                     "source": "SNOMEDCT_US",
-                    "span_txt": "ECG showed abnormal results"
+                    "span_txt": "ECG showed abnormal results",
+                    "edit":0
                 }
             ],
             "type": "HospitalRecord"
@@ -70,7 +75,8 @@
                     "confidence": 0.9,
                     "insurance_related": 0,
                     "source": "LOINC",
-                    "span_txt": "elevated white blood cell count"
+                    "span_txt": "elevated white blood cell count",
+                    "edit":0
                 },
                 {
                     "check": 0,
@@ -79,7 +85,48 @@
                     "confidence": 0.9,
                     "insurance_related": 0,
                     "source": "LOINC",
-                    "span_txt": "low hemoglobin"
+                    "span_txt": "low hemoglobin",
+                    "edit":0
+                }
+            ],
+            "type": "LaboratoryRecord"
+        },
+        {
+            "code_list": [
+                {
+                    "check": 0,
+                    "code": "66912",
+                    "code_name": "Leukocytes [#/volume] in Blood",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "RxNorm",
+                    "span_txt": "hours",
+                    "edit":0
+                },
+                {
+                    "check": 0,
+                    "code": "712-7",
+                    "code_name": "Hemoglobin [Mass/volume] in Blood",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "RxNorm",
+                    "span_txt": "for",
+                    "edit":0
+                }
+            ],
+            "type": "LaboratoryRecord"
+        },
+        {
+            "code_list": [
+                {
+                    "check": 0,
+                    "code": "6691-2",
+                    "code_name": "Leukocytes [#/volume] in Blood",
+                    "confidence": 0.9,
+                    "insurance_related": 0,
+                    "source": "ICD-10",
+                    "span_txt": "and",
+                    "edit":0
                 }
             ],
             "type": "LaboratoryRecord"

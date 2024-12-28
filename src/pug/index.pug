@@ -1,4 +1,4 @@
-//-include ./comps/AppBar.pug
+
 //-include ./comps/movType.pug
 //-include ./comps/QPopup.pug
 //-include ./comps/QResult.pug
@@ -28,7 +28,6 @@ html
                         span.right 0
                     span 錯誤
                         span.wrong 0
-                    span.status 未完成
                     button.main.send 完成送出
 
             .panelContainer
@@ -56,8 +55,8 @@ html
                                     th Code Name
                                     th Span Text
                                     th Confidence
-                                    th 
                             tbody#codeRow
+                    footer
                             
                     .btns
                 //-+AppBar
@@ -85,7 +84,8 @@ html
                         p 未分析
                         .not
                         p 已完成
-                        .done 
+                        .done
+            
             .modal.sendCheck.close 
                 .box
                     .header
@@ -94,3 +94,32 @@ html
                     .content
                         button.main.closeBtn 取消
                         button.main.doSend 確定
+
+            .modal.fixPanel.close 
+                .box
+                    .header
+                        p 修正
+                        button.main.closeBtn X
+                    .content
+                        table
+                            thead 
+                                tr 
+                                    th Source
+                                    th Code
+                                    th Code Name
+                                    th Association Name
+                                    th Unique
+                                    th Confidence
+                                    th Total
+                            tbody 
+                                tr
+                                    td.Source
+                                    td.Code
+                                    td.Code Name
+                                    td.Association Name
+                                    td.Unique
+                                    td.Confidence
+                                    td.Total
+                        textarea#description(placeholder="備註")
+                    .footer
+                        button.main.closeBtn 送出修改

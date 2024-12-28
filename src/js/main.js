@@ -71,7 +71,7 @@
         for(let key in dataPool){
             dataPool[key].map(item=>{
                 item.check == 1  && right++
-                item.check == -1 && wrong++
+                item.check == 0 && wrong++
             })
         }
         document.querySelector(".nav  span.right").innerHTML= right
@@ -100,6 +100,7 @@
                     code_name: item.code_name,
                     span_txt: item.span_txt,
                     confidence: item.confidence,
+                    edit:item.edit,
                     check: item.check, // 0未处理, -1错误, 1正确
                     insurance_related: item.insurance_related
                 });
@@ -124,6 +125,16 @@
         const renderRow = (data) => {
             const box = document.querySelector("#codeRow");
             cleanContainer("#codeRow");
+            const createFixBtn=(code)=>{
+                const btn = document.createElement("img");
+                btn.src =  "./img/fix.svg";
+                btn.classList.add("toFix")
+                btn.addEventListener("click", ()=>{
+                    document.querySelector(".fixPanel").classList.remove("close")
+                })
+                return btn
+            }
+            
             data.map((item, sn) => {
                 const tr = document.createElement("tr");
                 tr.style.animationDelay = `${sn * 100}ms`;
@@ -191,65 +202,63 @@
                             td.classList.add(item["source"]);
                             td.innerHTML = item[key];
                             break;
+                        case "edit":
+                            if(item['edit']==1) td.appendChild( createFixBtn("code") );
+                            break
                         case "check":
-                            const changeBtnState = (_x, _v, _val) => {
-                                if (_val == -1) {
-                                    _x.src = "./img/checkx1.svg";
-                                    _v.src = "./img/checkv0.svg";
-                                } else if (_val == 1) {
-                                    _x.src = "./img/checkx0.svg";
+                            const changeBtnState = ( _v, _val) => {
+                                if (_val == 1) {
                                     _v.src = "./img/checkv1.svg";
-
                                 } else {
-                                    _x.src = "./img/checkx0.svg";
                                     _v.src = "./img/checkv0.svg";
                                 }
                             }
-                            const btnX = document.createElement("img");
                             const btnV = document.createElement("img");
-                            btnX.dataset.code = item['code'];
-                            btnX.addEventListener("click", event => {
-                                findObj(item["source"], event.target.dataset.code, (d) => {
-                                    d.check == 0 || d.check == 1 ?
-                                        d.check = -1 :
-                                        d.check = 0;
-                                    changeBtnState(btnX, btnV, d.check)
-                                })
-                                renderTotalRW()
-                            });
-
+                            btnV.classList.add("check")
                             btnV.dataset.code = item['code'];
                             btnV.addEventListener("click", event => {
                                 findObj(item["source"], event.target.dataset.code, (d) => {
                                     d.check == 0 || d.check == -1 ?
                                         d.check = 1 :
                                         d.check = 0;
-                                    changeBtnState(btnX, btnV, d.check)
+                                    changeBtnState( btnV, d.check)
                                 })
                                 renderTotalRW()
                             });
-                            changeBtnState(btnX, btnV, item[key])
-                            td.appendChild(btnX);
+                            changeBtnState( btnV, item[key])
                             td.appendChild(btnV);
+        
+                           
+
+                            break;
+                        case "insurance_related":
+                            //健保顯示的icon
+                            const _h = document.createElement("img")
+                            _h.src= item["insurance_related"] == 1? "./img/health1.svg":"./img/health0.svg"
+                            td.appendChild(_h)
                             break;
                         default:
                             td.innerHTML = item[key];
                     }
-
-                    //暫時隱藏不需顯示的欄位
-                    if (key == "eye" || key == "insurance_related") {
+                    
+                    //隱藏不需顯示的欄位
+                    if (key == "eye"   ) {
                     } else {
                         tr.appendChild(td);
                     }
                 }
-                box.appendChild(tr);
+                box.appendChild(tr)
             });
+            const btn = document.querySelector("#codeCtrl footer button")
+            btn.classList.remove(...btn.classList);
+            btn.classList.add("main", data[0].source)
+            
+            btn.innerHTML = data[0].source.replace(replaceWhitwSpace," ") + "完成";
         }
 
         // 查找关键字按钮
         const findBtns = (keyword) => {
             const content = document.querySelector("#myArtical .content .ENG");
-            //content.innerHTML = org;
             let reg = new RegExp(keyword, 'g');
             let artical = content.innerHTML;
             return [...artical.matchAll(reg)];
@@ -283,10 +292,9 @@
         cleanContainer("#codeCtrl .tabs");
         for (let key in dataPool) {
             const btn = document.createElement('button');
-            btn.innerHTML = key.replace("_", " ");
+            btn.innerHTML = key.replace(replaceWhitwSpace, " ");
             btn.classList.add(key);
             btn.addEventListener('click', () => {
-                //const content = document.querySelector("#myArtical .content").scrollTo({ top: 0 });
                 tabBox.querySelectorAll("button").forEach(btn => { btn.classList.remove("high") });
                 renderRow(dataPool[key], btn);
                 btn.classList.add("high");
@@ -392,11 +400,8 @@
             })
     }
 
-    
-
     // 设置按钮和事件处理程序
     const buttonsSetting = (config) => {
-
         //下一筆
         document.querySelector(".nextCase").addEventListener("click", () => {
             contentLoader(
@@ -474,8 +479,20 @@
             document.querySelector(".modal.sendCheck").classList.add("close");
             sendData();
         })
-
         
+        //右下方完成按鈕 點下後會等同於點選tab中的下一個選項 最後一個會循環
+        const btn = document.createElement("button")
+        btn.classList.add("main")
+        document.querySelector("#codeCtrl footer").appendChild(btn)
+        btn.addEventListener("click", ()=>{ 
+            const _p=document.querySelector("#codeCtrl .tabs");
+            const _t=document.querySelector("#codeCtrl .tabs .high");
+            if(Array.from(_p.children).indexOf(_t) == Array.from(_p.children).length -1){
+                Array.from(_p.children)[0].click()
+            }else{
+                _t.nextSibling.click()
+            }
+        }/*, { once: true }*/)
     }
 
     // 文章语言切换设置

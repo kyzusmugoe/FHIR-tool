@@ -56,8 +56,9 @@
         padding:10px 15px
         color: white
         font-size: 14px
-        transition: .2s
+        cursor: pointer
         &:active
+            transition: .2s
             transform: scale(1.1)
         &.main
             border-radius: 5px
@@ -157,7 +158,36 @@
                         font-size: 1.2em
                         &.closeBtn
                             background-color: #F30
-                
+
+        &.fixPanel
+            .box
+                max-width: 1000px
+                max-height: 380px
+                .header
+                    border: none
+                .content
+                    width: 100%
+                    table
+                        border-collapse: collapse
+                        width: 100%
+                        th
+                            border-bottom: 1px solid config.$lineColor
+                        td
+                            background-color: #F5F5F5
+                            padding: 15px
+                            text-align: center
+                    textarea
+                        border: 1px solid #D9D9D9
+                        border-radius: 10px
+                        margin-top: 14px
+                        width: calc(100% - 20px)
+                        min-height: 120px
+                        padding:10px
+                        font-size: 14px
+                .footer
+                    width: 100%
+                    display: flex
+                    justify-content: flex-end
                            
                     
                 

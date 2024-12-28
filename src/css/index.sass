@@ -208,64 +208,75 @@ body
                     color: #1855be
                     option
                         color: #1855be
-            table
-                width:  100%
-                border-collapse: collapse
-                th
-                    text-align: left
-                
-                #codeRow
-                    tr
-                        border-top: 1px solid config.$lineColor                            
-                        @include fadeInAmin()                            
-                        &:nth-child(odd)
-                            background-color: #f8f8f8
-                        th
-                            white-space: nowrap
-                        td
-                            vertical-align: top
-                            padding: 5px
-                            
-                            &.high
-                                @include typesBG()
-                            .badge
-                                padding:2px 4px
-                                white-space: nowrap 
-                                display: flex
-                                justify-content: center
-                                align-content: center
-                                border-radius: 4px
-                                color: white
-                                font-size: 14px
-                                font-weight: 600
-                                @include typesBG()
-                            i
-                                &.fa-eye-slash
-                                    transform: scaleX(-1)
-                                @include typesTxt()
-                            
-                            img
-                                transition: .2s
-                                &:first-child
-                                    margin-right: 5px
-                                &:active
-                                    transform: scale(1.2)
-                            &.code
-                                @include typesTxt()
-                            
-                            &:nth-child(1)
-                                text-align: center
-                                width: 50px
-                            
-                            &:nth-child(2)
-                                text-align: center
-                                max-width: 120px
-                            &:nth-child(3)
-                                text-align: center
-                                min-width: 80px
-
-                            
+            .content
+                height: 479px
+                overflow-y: auto
+                table
+                    width:  100%
+                    border-collapse: collapse
+                    th
+                        text-align: left
+                    
+                    #codeRow
+                        tr
+                            border-top: 1px solid config.$lineColor                            
+                            @include fadeInAmin()                            
+                            &:nth-child(odd)
+                                background-color: #f8f8f8
+                            th
+                                white-space: nowrap
+                            td
+                                vertical-align: top
+                                padding: 5px
                                 
+                                &.high
+                                    @include typesBG()
+                                .badge
+                                    padding:2px 4px
+                                    white-space: nowrap 
+                                    display: flex
+                                    justify-content: center
+                                    align-content: center
+                                    border-radius: 4px
+                                    color: white
+                                    font-size: 14px
+                                    font-weight: 600
+                                    @include typesBG()
+                                i
+                                    &.fa-eye-slash
+                                        transform: scaleX(-1)
+                                    @include typesTxt()
+                                
+                                img
+                                    transition: .2s
+                                    &:first-child
+                                        margin-right: 5px
+                                    &:active
+                                        transform: scale(1.2)
+                                img.check
+                                    cursor: pointer
+
+                                &.code
+                                    @include typesTxt()
+                                &.check
+                                    display: flex
+                                
+                                &:nth-child(1)
+                                    text-align: center
+                                    width: 50px
+                                
+                                &:nth-child(2)
+                                    text-align: center
+                                    max-width: 120px
+                                &:nth-child(3)
+                                    text-align: center
+                                    min-width: 80px
+                    
+            footer
+                text-align: right
+                button
+                    @include typesBG()
+
             .spanTxtBox
                 display: flex
                 flex-direction: column
