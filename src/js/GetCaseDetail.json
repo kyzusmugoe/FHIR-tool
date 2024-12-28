@@ -76,7 +76,7 @@
                     "insurance_related": 0,
                     "source": "LOINC",
                     "span_txt": "elevated white blood cell count",
-                    "edit":0
+                    "edit":1
                 },
                 {
                     "check": 0,
@@ -111,7 +111,7 @@
                     "insurance_related": 0,
                     "source": "RxNorm",
                     "span_txt": "for",
-                    "edit":0
+                    "edit":1
                 }
             ],
             "type": "LaboratoryRecord"

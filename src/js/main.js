@@ -4,8 +4,10 @@
     let dataPool = {}; // 从 GetCaseDetail 获取的原始数据
 
     // 从 URL 获取 CaseID 和 ProjectID 参数
-    const CaseID = new URL(window.location.href).searchParams.get('CaseID');
-    const ProjectID = new URL(window.location.href).searchParams.get('ProjectID');
+    const MYURL = new URL(window.location.href)
+    const CaseID = MYURL.searchParams.get('CaseID');
+    const ProjectID = MYURL.searchParams.get('ProjectID');
+    const Editor = MYURL.searchParams.get('Editor');
 
     const replaceWhitwSpace = "_"; // 用于替换空白字符
 
@@ -65,17 +67,17 @@
     }
 
     // 正確與錯誤的總數量
-    const renderTotalRW =()=>{
-        let right=0;
-        let wrong=0;
-        for(let key in dataPool){
-            dataPool[key].map(item=>{
-                item.check == 1  && right++
+    const renderTotalRW = () => {
+        let right = 0;
+        let wrong = 0;
+        for (let key in dataPool) {
+            dataPool[key].map(item => {
+                item.check == 1 && right++
                 item.check == 0 && wrong++
             })
         }
-        document.querySelector(".nav  span.right").innerHTML= right
-        document.querySelector(".nav  span.wrong").innerHTML= wrong
+        document.querySelector(".nav  span.right").innerHTML = right
+        document.querySelector(".nav  span.wrong").innerHTML = wrong
     }
 
     // 设置右侧功能栏
@@ -100,7 +102,7 @@
                     code_name: item.code_name,
                     span_txt: item.span_txt,
                     confidence: item.confidence,
-                    edit:item.edit,
+                    edit: item.edit,
                     check: item.check, // 0未处理, -1错误, 1正确
                     insurance_related: item.insurance_related
                 });
@@ -125,16 +127,24 @@
         const renderRow = (data) => {
             const box = document.querySelector("#codeRow");
             cleanContainer("#codeRow");
-            const createFixBtn=(code)=>{
+
+            //編輯按鈕
+            const createFixBtn = (row) => {
                 const btn = document.createElement("img");
-                btn.src =  "./img/fix.svg";
+                btn.src = "./img/fix.svg";
                 btn.classList.add("toFix")
-                btn.addEventListener("click", ()=>{
-                    document.querySelector(".fixPanel").classList.remove("close")
+                btn.addEventListener("click", () => {
+                    const panel = document.querySelector(".fixPanel")
+                    panel.classList.remove("close")
+                    panel.querySelector(".badge").innerHTML = row.source
+                    panel.querySelector(".code").innerHTML = row.code
+                    panel.querySelector(".codeName").innerHTML = row.code_name
+                    console.log(row)
                 })
                 return btn
             }
-            
+
+
             data.map((item, sn) => {
                 const tr = document.createElement("tr");
                 tr.style.animationDelay = `${sn * 100}ms`;
@@ -191,22 +201,36 @@
                                 box.appendChild(btn)
                             })
                             td.appendChild(box)
+                            tr.appendChild(td);
                             break
+                        case "code_name":
+                            td.innerHTML = item[key];
+                            tr.appendChild(td);
+                            break;
+                        case "confidence":
+                            td.innerHTML = item[key];
+                            tr.appendChild(td);
+                            break;
                         case "source":
                             const badge = document.createElement("div");
                             badge.classList.add("badge", item["source"]);
                             badge.innerHTML = item[key].replace(replaceWhitwSpace, " ");
                             td.appendChild(badge);
+                            tr.appendChild(td);
                             break;
                         case "code":
                             td.classList.add(item["source"]);
                             td.innerHTML = item[key];
+                            tr.appendChild(td);
                             break;
                         case "edit":
-                            if(item['edit']==1) td.appendChild( createFixBtn("code") );
+                            if (Editor == 1) {
+                                if (item['edit'] == 1) td.appendChild(createFixBtn(item));
+                                tr.appendChild(td);
+                            }
                             break
                         case "check":
-                            const changeBtnState = ( _v, _val) => {
+                            const changeBtnState = (_v, _val) => {
                                 if (_val == 1) {
                                     _v.src = "./img/checkv1.svg";
                                 } else {
@@ -221,39 +245,35 @@
                                     d.check == 0 || d.check == -1 ?
                                         d.check = 1 :
                                         d.check = 0;
-                                    changeBtnState( btnV, d.check)
+                                    changeBtnState(btnV, d.check)
                                 })
                                 renderTotalRW()
                             });
-                            changeBtnState( btnV, item[key])
+                            changeBtnState(btnV, item[key])
                             td.appendChild(btnV);
-        
-                           
-
+                            tr.appendChild(td);
                             break;
                         case "insurance_related":
                             //健保顯示的icon
-                            const _h = document.createElement("img")
-                            _h.src= item["insurance_related"] == 1? "./img/health1.svg":"./img/health0.svg"
-                            td.appendChild(_h)
+                            if (Editor == 1) {
+                                const _h = document.createElement("img")
+                                _h.src = item["insurance_related"] == 1 ? "./img/health1.svg" : "./img/health0.svg"
+                                td.appendChild(_h)
+                                tr.appendChild(td);
+                            }
                             break;
-                        default:
-                            td.innerHTML = item[key];
                     }
-                    
-                    //隱藏不需顯示的欄位
-                    if (key == "eye"   ) {
-                    } else {
-                        tr.appendChild(td);
-                    }
+
+
                 }
                 box.appendChild(tr)
             });
-            const btn = document.querySelector("#codeCtrl footer button")
-            btn.classList.remove(...btn.classList);
-            btn.classList.add("main", data[0].source)
-            
-            btn.innerHTML = data[0].source.replace(replaceWhitwSpace," ") + "完成";
+
+            //設定右下完成按鈕的功能
+            const cbtn = document.querySelector("#codeCtrl footer button.complete")
+            cbtn.classList.remove(...cbtn.classList);
+            cbtn.classList.add("main", "complete", data[0].source)
+            cbtn.innerHTML = data[0].source.replace(replaceWhitwSpace, " ") + "完成";
         }
 
         // 查找关键字按钮
@@ -269,7 +289,6 @@
             const content = document.querySelector("#myArtical .content .ENG");
             let artical = content.innerHTML;
             let reg = new RegExp(item.span_txt, 'gi');
-            let tempA;
             if (artical.match(reg)) {
                 content.innerHTML = artical.replace(reg, `<span class="mark ${item.source} code${item.code} close ">${item.span_txt}</span>`);
             }
@@ -353,7 +372,7 @@
                     document.querySelector(".modal.codeList .content .done").appendChild(caseBtn);
                     break;
             }
-            if(item.state !=0){
+            if (item.state != 0) {
                 caseBtn.addEventListener("click", () => {
                     // 重新加载页面并传递新的 CaseID
                     window.location.href = `./?CaseID=${item.case}&ProjectID=${ProjectID}`;
@@ -413,27 +432,27 @@
                     "page_size": 20
                 }
             )
-            .then(res => {
-                let _current;
-                let _findCase;
-                res.caseList.map(item=>{
-                    if(_current && !_findCase && _current.state == item.state) _findCase = item.case; 
-                    if(item.case == CaseID) _current = item;
-                })
-                if(!_findCase){
-                    for(let i=0; i<res.caseList.length; i++){
-                        console.log(i)
-                        if(res.caseList[i].state == _current.state){
-                            _findCase = res.caseList[i].case
-                            break
+                .then(res => {
+                    let _current;
+                    let _findCase;
+                    res.caseList.map(item => {
+                        if (_current && !_findCase && _current.state == item.state) _findCase = item.case;
+                        if (item.case == CaseID) _current = item;
+                    })
+                    if (!_findCase) {
+                        for (let i = 0; i < res.caseList.length; i++) {
+                            console.log(i)
+                            if (res.caseList[i].state == _current.state) {
+                                _findCase = res.caseList[i].case
+                                break
+                            }
                         }
                     }
-                }
-                window.location.href = `./?CaseID=${_findCase}&ProjectID=${ProjectID}`;
-            })
-            .catch(error => {
-                console.error(error);
-            })
+                    window.location.href = `./?CaseID=${_findCase}&ProjectID=${ProjectID}`;
+                })
+                .catch(error => {
+                    console.error(error);
+                })
         })
 
         // 打开病例列表
@@ -448,16 +467,16 @@
                     "page_size": 20
                 }
             )
-            .then(res => {
-                if (res.meta && res.meta.code === 200) {
-                    renderCodeList(res);
-                } else {
-                    throw new Error("加载病例列表失败");
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            })
+                .then(res => {
+                    if (res.meta && res.meta.code === 200) {
+                        renderCodeList(res);
+                    } else {
+                        throw new Error("加载病例列表失败");
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                })
         })
 
         // 关闭模态框
@@ -479,17 +498,44 @@
             document.querySelector(".modal.sendCheck").classList.add("close");
             sendData();
         })
-        
-        //右下方完成按鈕 點下後會等同於點選tab中的下一個選項 最後一個會循環
-        const btn = document.createElement("button")
-        btn.classList.add("main")
-        document.querySelector("#codeCtrl footer").appendChild(btn)
-        btn.addEventListener("click", ()=>{ 
-            const _p=document.querySelector("#codeCtrl .tabs");
-            const _t=document.querySelector("#codeCtrl .tabs .high");
-            if(Array.from(_p.children).indexOf(_t) == Array.from(_p.children).length -1){
+
+        //編輯者建立關鍵字按鈕的面板開關
+        if (Editor == 1) {
+            const fbtn = document.createElement("button")
+            fbtn.classList.add("main", "fill")
+            fbtn.innerHTML = "補充"
+            document.querySelector("#codeCtrl footer").appendChild(fbtn)
+            fbtn.addEventListener("click", event => {
+                document.querySelector(".modal.keyWrodPanel").classList.remove("close")
+            })
+        }
+
+        const selectTxt = document.querySelector("#myArtical .content .selectTxt")
+        selectTxt.addEventListener("click", () => {
+            document.querySelector(".modal.keyWrodPanel").classList.remove("close")
+        })
+        document.querySelector("#myArtical .content").addEventListener("mouseup", event => {
+            const sTxt = window.getSelection().toString()
+            if (sTxt) {
+                selectTxt.classList.remove("close")
+                selectTxt.style.top = `${event.pageY + 20}px`
+                selectTxt.style.left = `${event.pageX + 20}px`
+                setTimeout(() => {
+                    selectTxt.classList.add("close")
+                }, 5000);
+            }
+        })
+
+        //建立右下方完成按鈕 點下後會等同於點選tab中的下一個選項 最後一個會循環
+        const cbtn = document.createElement("button")
+        document.querySelector("#codeCtrl footer").appendChild(cbtn)
+        cbtn.classList.add("complete")
+        cbtn.addEventListener("click", () => {
+            const _p = document.querySelector("#codeCtrl .tabs");
+            const _t = document.querySelector("#codeCtrl .tabs .high");
+            if (Array.from(_p.children).indexOf(_t) == Array.from(_p.children).length - 1) {
                 Array.from(_p.children)[0].click()
-            }else{
+            } else {
                 _t.nextSibling.click()
             }
         }/*, { once: true }*/)
@@ -557,6 +603,8 @@
             } else {
                 throw new Error("加载病例详细信息失败");
             }
+
+
         }).catch(error => {
             console.error(error);
         })

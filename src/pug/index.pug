@@ -40,6 +40,7 @@ html
                     .content
                         .ENG
                         .CHT.close
+                        .selectTxt.close 補充
                 #codeCtrl
                     .headerBox
                         .tabs
@@ -57,21 +58,6 @@ html
                                     th Confidence
                             tbody#codeRow
                     footer
-                            
-                    .btns
-                //-+AppBar
-                //-+QPopup
-                //首頁
-                //-+QResult
-                //列表
-                //-include ./comps/list.pug
-                //-+movType
-                //播放器 
-                //-include ./comps/count.pug
-                //-include ./comps/player.pug
-                //結束畫面
-                //-include ./comps/end.pug
-            //-include ./comps/loading.pug
 
             .modal.codeList.close
                 .box
@@ -113,9 +99,12 @@ html
                                     th Total
                             tbody 
                                 tr
-                                    td.Source
+                                    td.Source 
+                                        div.badge
                                     td.Code
+                                        span.code
                                     td.Code Name
+                                        span.codeName
                                     td.Association Name
                                     td.Unique
                                     td.Confidence
@@ -123,3 +112,14 @@ html
                         textarea#description(placeholder="備註")
                     .footer
                         button.main.closeBtn 送出修改
+        
+            .modal.keyWrodPanel.close 
+                    .box
+                        .header
+                            p 選擇文字範圍
+                            button.main.closeBtn X
+                        .content
+                           
+                        .footer
+                            button.main.closeBtn 取消
+                            button.main.doSend 確定
