@@ -57,7 +57,7 @@ html
                                     th Span Text
                                     th Confidence
                             tbody#codeRow
-                    footer
+                    .footer
 
             .modal.codeList.close
                 .box
@@ -81,10 +81,48 @@ html
                         button.main.closeBtn 取消
                         button.main.doSend 確定
 
-            .modal.fixPanel.close 
+            //--
+                .modal.fixPanel.close 
+                    .box
+                        .header
+                            p 修正
+                            button.main.closeBtn X
+                        .content
+                            table
+                                thead 
+                                    tr 
+                                        th Source
+                                        th Code
+                                        th Code Name
+                                        th Association Name
+                                        th Unique
+                                        th Confidence
+                                        th Total
+                                tbody 
+                                    tr
+                                        td 
+                                            div.badge
+                                        td
+                                            span.code
+                                        td
+                                            input.codeName
+                                        td
+                                            span.association
+                                        td 
+                                            span.unique
+                                        td 
+                                            span.confidence
+                                        td
+                                            span.total
+                            textarea#description(placeholder="備註")
+                        .footer
+                            button.main.closeBtn 送出修改
+
+
+            .modal.aboutPanel.close 
                 .box
                     .header
-                        p 修正
+                        p 補充
                         button.main.closeBtn X
                     .content
                         table
@@ -93,33 +131,30 @@ html
                                     th Source
                                     th Code
                                     th Code Name
-                                    th Association Name
-                                    th Unique
-                                    th Confidence
-                                    th Total
+                                    th Association
+                                   
                             tbody 
                                 tr
-                                    td.Source 
+                                    td 
                                         div.badge
-                                    td.Code
+                                    td
                                         span.code
-                                    td.Code Name
-                                        span.codeName
-                                    td.Association Name
-                                    td.Unique
-                                    td.Confidence
-                                    td.Total
+                                    td
+                                        input.codeName
+                                    td
+                                        button.openkeyWordPanel 
+
                         textarea#description(placeholder="備註")
                     .footer
                         button.main.closeBtn 送出修改
         
-            .modal.keyWrodPanel.close 
+            
+            .modal.keyWordPanel.close 
                     .box
                         .header
                             p 選擇文字範圍
                             button.main.closeBtn X
                         .content
-                           
-                        .footer
-                            button.main.closeBtn 取消
-                            button.main.doSend 確定
+                            .selectKeyWordFromArtical
+                        .footer.center
+                            button.main.disabled.closeBtn 確認範圍

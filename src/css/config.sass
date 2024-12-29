@@ -40,3 +40,35 @@ $lonic: #0098F0
 @mixin ss
     @media(max-width:320px)
         @content
+
+@mixin typesTxt()
+    &.ICD-10
+        color: $icd10
+    &.SNOMEDCT_US
+        color: $snomedct
+    &.RxNorm
+        color: $rxnorm
+    &.LOINC
+        color: $lonic
+
+@mixin typesBG()
+    &.ICD-10
+        background-color: $icd10
+    &.SNOMEDCT_US
+        background-color: $snomedct
+    &.RxNorm
+        background-color: $rxnorm
+    &.LOINC
+        background-color: $lonic
+
+@mixin myBadge()
+    padding:2px 4px
+    white-space: nowrap 
+    display: flex
+    justify-content: center
+    align-content: center
+    border-radius: 4px
+    color: white
+    font-size: 14px
+    font-weight: 600
+    @include typesBG()

@@ -1,0 +1,8 @@
+{
+    "codeList":[
+        {"code":"a001","code_name":"testName1","source":"SNOMEDCT_US"},
+        {"code":"b002","code_name":"testName2","source":"LOINC"},
+        {"code":"b002","code_name":"testName3","source":"RxNorm"},
+        {"code":"b002","code_name":"testName4","source":"ICD-10"}
+    ]
+}

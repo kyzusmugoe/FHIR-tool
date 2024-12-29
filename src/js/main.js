@@ -134,16 +134,20 @@
                 btn.src = "./img/fix.svg";
                 btn.classList.add("toFix")
                 btn.addEventListener("click", () => {
-                    const panel = document.querySelector(".fixPanel")
+                    const panel = document.querySelector(".aboutPanel")
+                    const badge =  panel.querySelector(".badge")
+                    badge.classList.remove(...badge.classList)
+                    badge.classList.add("badge", row.source)
                     panel.classList.remove("close")
                     panel.querySelector(".badge").innerHTML = row.source
                     panel.querySelector(".code").innerHTML = row.code
-                    panel.querySelector(".codeName").innerHTML = row.code_name
+                    panel.querySelector(".codeName").value = row.code_name
+                    panel.querySelector(".openkeyWordPanel").innerHTML = row.span_txt
+                    //panel.querySelector(".confidence").innerHTML = row.confidence
                     console.log(row)
                 })
                 return btn
             }
-
 
             data.map((item, sn) => {
                 const tr = document.createElement("tr");
@@ -270,7 +274,7 @@
             });
 
             //設定右下完成按鈕的功能
-            const cbtn = document.querySelector("#codeCtrl footer button.complete")
+            const cbtn = document.querySelector("#codeCtrl .footer button.complete")
             cbtn.classList.remove(...cbtn.classList);
             cbtn.classList.add("main", "complete", data[0].source)
             cbtn.innerHTML = data[0].source.replace(replaceWhitwSpace, " ") + "完成";
@@ -504,31 +508,57 @@
             const fbtn = document.createElement("button")
             fbtn.classList.add("main", "fill")
             fbtn.innerHTML = "補充"
-            document.querySelector("#codeCtrl footer").appendChild(fbtn)
-            fbtn.addEventListener("click", event => {
-                document.querySelector(".modal.keyWrodPanel").classList.remove("close")
+            document.querySelector("#codeCtrl .footer").appendChild(fbtn)
+            fbtn.addEventListener("click", () => {
+                document.querySelector(".modal.aboutPanel").classList.remove("close")
+                document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.add("outline")
+                document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = "選擇文字範圍"
+
             })
         }
 
+       
+        //左側的補充按鈕，開啟補充視窗
         const selectTxt = document.querySelector("#myArtical .content .selectTxt")
         selectTxt.addEventListener("click", () => {
-            document.querySelector(".modal.keyWrodPanel").classList.remove("close")
+            document.querySelector(".modal.aboutPanel").classList.remove("close")
+            selectTxt.classList.add("close")
         })
-        document.querySelector("#myArtical .content").addEventListener("mouseup", event => {
-            const sTxt = window.getSelection().toString()
-            if (sTxt) {
+
+        //左側文章文字擷取，擷取完後會彈出補充按鈕，點選後開啟補充視窗
+        document.querySelector("#myArtical .content .ENG").addEventListener("mouseup", event => {
+            if (window.getSelection().toString()) {
                 selectTxt.classList.remove("close")
                 selectTxt.style.top = `${event.pageY + 20}px`
                 selectTxt.style.left = `${event.pageX + 20}px`
+                document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.remove("outline")
+                document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = window.getSelection().toString()
                 setTimeout(() => {
                     selectTxt.classList.add("close")
                 }, 5000);
             }
         })
 
+        //補充視窗內的文字擷取
+        document.querySelector(".modal.keyWordPanel .selectKeyWordFromArtical").addEventListener("mouseup", () => {
+            const confirmBtn = document.querySelector(".modal.keyWordPanel .footer button")
+            confirmBtn.classList.add("disabled")
+            if (window.getSelection().toString()) {
+                confirmBtn.classList.remove("disabled")
+                document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.remove("outline")
+                document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = window.getSelection().toString()
+            }
+        })
+
+        //補充文字確認送出
+        document.querySelector(".modal.keyWordPanel .footer button").addEventListener("click", ()=>{
+            document.querySelector(".modal.aboutPanel").classList.remove("close")
+           
+        })
+
         //建立右下方完成按鈕 點下後會等同於點選tab中的下一個選項 最後一個會循環
         const cbtn = document.createElement("button")
-        document.querySelector("#codeCtrl footer").appendChild(cbtn)
+        document.querySelector("#codeCtrl .footer").appendChild(cbtn)
         cbtn.classList.add("complete")
         cbtn.addEventListener("click", () => {
             const _p = document.querySelector("#codeCtrl .tabs");
@@ -539,6 +569,12 @@
                 _t.nextSibling.click()
             }
         }/*, { once: true }*/)
+
+        //補充視窗，打開文字選取視窗按鈕
+        document.querySelector(".openkeyWordPanel").addEventListener("click",()=>{
+            document.querySelector(".modal.aboutPanel").classList.add("close")
+            document.querySelector(".modal.keyWordPanel").classList.remove("close")
+        })
     }
 
     // 文章语言切换设置
@@ -583,6 +619,13 @@
             )
         }).then(artical => {
             if (artical.meta && artical.meta.code === 200) {
+
+                document.querySelector(".selectKeyWordFromArtical").innerHTML = artical.paragraphs.map(p => p.eng).join('<br><br>');
+                
+                //選取範圍
+
+                
+
                 changeArticalLang(artical);
                 // 获取病例详细信息
                 return contentLoader("./js/GetCaseDetail.json")//測試用
@@ -603,7 +646,6 @@
             } else {
                 throw new Error("加载病例详细信息失败");
             }
-
 
         }).catch(error => {
             console.error(error);
