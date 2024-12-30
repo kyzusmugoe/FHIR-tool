@@ -135,7 +135,7 @@
                 btn.classList.add("toFix")
                 btn.addEventListener("click", () => {
                     const panel = document.querySelector(".aboutPanel")
-                    const badge =  panel.querySelector(".badge")
+                    const badge = panel.querySelector(".badge")
                     badge.classList.remove(...badge.classList)
                     badge.classList.add("badge", row.source)
                     panel.classList.remove("close")
@@ -517,7 +517,7 @@
             })
         }
 
-       
+
         //左側的補充按鈕，開啟補充視窗
         const selectTxt = document.querySelector("#myArtical .content .selectTxt")
         selectTxt.addEventListener("click", () => {
@@ -551,9 +551,9 @@
         })
 
         //補充文字確認送出
-        document.querySelector(".modal.keyWordPanel .footer button").addEventListener("click", ()=>{
+        document.querySelector(".modal.keyWordPanel .footer button").addEventListener("click", () => {
             document.querySelector(".modal.aboutPanel").classList.remove("close")
-           
+
         })
 
         //建立右下方完成按鈕 點下後會等同於點選tab中的下一個選項 最後一個會循環
@@ -571,10 +571,14 @@
         }/*, { once: true }*/)
 
         //補充視窗，打開文字選取視窗按鈕
-        document.querySelector(".openkeyWordPanel").addEventListener("click",()=>{
+        document.querySelector(".openkeyWordPanel").addEventListener("click", () => {
             document.querySelector(".modal.aboutPanel").classList.add("close")
             document.querySelector(".modal.keyWordPanel").classList.remove("close")
         })
+
+        
+        const input = document.querySelector(".modal.aboutPanel input.codeName")
+        new Autocomplete(input, './js/getCodeNameList.json');
     }
 
     // 文章语言切换设置
@@ -621,11 +625,8 @@
             if (artical.meta && artical.meta.code === 200) {
 
                 document.querySelector(".selectKeyWordFromArtical").innerHTML = artical.paragraphs.map(p => p.eng).join('<br><br>');
-                
+
                 //選取範圍
-
-                
-
                 changeArticalLang(artical);
                 // 获取病例详细信息
                 return contentLoader("./js/GetCaseDetail.json")//測試用
@@ -646,9 +647,81 @@
             } else {
                 throw new Error("加载病例详细信息失败");
             }
-
         }).catch(error => {
             console.error(error);
         })
     })
 })()
+
+class Autocomplete {
+    constructor(input, dataUrl) {
+        this.input = input;
+        this.suggestionsBox = null;
+        this.createSuggestionsBox();
+        this.loadData(dataUrl);
+    }
+
+    createSuggestionsBox() {
+        this.suggestionsBox = document.createElement('div');
+        this.suggestionsBox.className = 'suggestions-box';
+        this.suggestionsBox.style.display = 'none';
+        this.input.parentNode.insertBefore(this.suggestionsBox, this.input.nextSibling);
+    }
+
+    async loadData(url) {
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            console.log(data)
+            this.suggestions = data.codeList.map(item => item.code_name);
+            this.setupEventListeners();
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+    }
+
+    setupEventListeners() {
+        let debounceTimer;
+
+        this.input.addEventListener('input', () => { 
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => this.showSuggestions(), 300);
+        });
+
+        this.input.addEventListener('blur', () => {
+            setTimeout(() => this.suggestionsBox.style.display = 'none', 200);
+        });
+    }
+
+    showSuggestions() {
+        const inputValue = this.input.value.toLowerCase();
+        if (inputValue.length < 2) {
+            this.suggestionsBox.style.display = 'none';
+            return;
+        }
+
+        const matches = this.suggestions.filter(item =>
+            item.toLowerCase().includes(inputValue)
+        );
+
+        if (matches.length === 0) {
+            this.suggestionsBox.style.display = 'none';
+            return;
+        }
+
+        this.suggestionsBox.innerHTML = matches
+            .map(item => `<div class="suggestion-item">${item}</div>`)
+            .join('');
+
+        this.suggestionsBox.style.display = 'block';
+
+        // 为每个建议项添加点击事件
+        const items = this.suggestionsBox.getElementsByClassName('suggestion-item');
+        Array.from(items).forEach(item => {
+            item.addEventListener('click', () => {
+                this.input.value = item.textContent;
+                this.suggestionsBox.style.display = 'none';
+            });
+        });
+    }
+}

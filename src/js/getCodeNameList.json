@@ -1,8 +1,11 @@
 {
     "codeList":[
-        {"code":"a001","code_name":"testName1","source":"SNOMEDCT_US"},
-        {"code":"b002","code_name":"testName2","source":"LOINC"},
-        {"code":"b002","code_name":"testName3","source":"RxNorm"},
-        {"code":"b002","code_name":"testName4","source":"ICD-10"}
+        {"code":"a001","code_name":"atestName","source":"SNOMEDCT_US"},
+        {"code":"a001","code_name":"abtestName","source":"SNOMEDCT_US"},
+        {"code":"a001","code_name":"abctestName","source":"SNOMEDCT_US"},
+        {"code":"a001","code_name":"abcdtestName","source":"SNOMEDCT_US"},
+        {"code":"b002","code_name":"btestName","source":"LOINC"},
+        {"code":"b002","code_name":"ctestName","source":"RxNorm"},
+        {"code":"b002","code_name":"dtestName","source":"ICD-10"}
     ]
 }
