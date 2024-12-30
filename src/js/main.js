@@ -1,8 +1,8 @@
 (() => {
     let org; // 原始文章文本
     let config; // 配置对象
-    let dataPool = {}; // 从 GetCaseDetail 获取的原始数据
-
+    let dataPool = {}; // 获取的原始数据
+    let editData = {}; // 获取的原始数据
     // 从 URL 获取 CaseID 和 ProjectID 参数
     const MYURL = new URL(window.location.href)
     const CaseID = MYURL.searchParams.get('CaseID');
@@ -78,6 +78,94 @@
         }
         document.querySelector(".nav  span.right").innerHTML = right
         document.querySelector(".nav  span.wrong").innerHTML = wrong
+    }
+
+    const checkAboutPanel = ()=>{
+        document.querySelector(".modal.aboutPanel .footer button").classList.remove("disabled")
+    }
+
+    //設定自動完成欄位
+    const autocomplete = (inp, arr, action) => {
+        let currentFocus;
+        inp.addEventListener("input", function (e) {
+            let a, b, i, val = this.value;
+            closeAllLists();
+            if (!val) { return false; }
+            currentFocus = -1;
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            this.parentNode.appendChild(a);
+
+            for (let i = 0; i < arr.length; i++) {
+                const keyword = arr[i].code_name
+                if (keyword.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    b = document.createElement("DIV");
+                    b.innerHTML = "<strong>" + keyword.substr(0, val.length) + "</strong>";
+                    b.innerHTML += keyword.substr(val.length);
+                    b.innerHTML += "<input type='hidden' value='" + keyword + "'>";
+                    const _d = arr[i]
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        checkAboutPanel()
+                        action(_d)
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", e => {
+            let x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+                currentFocus++;
+                addActive(x);
+            } else if (e.keyCode == 38) {
+
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        const addActive = x => {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        const removeActive = x => {
+            for (let i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        const closeAllLists = elmnt => {
+            let x = document.getElementsByClassName("autocomplete-items");
+            for (let i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+        document.addEventListener("click", e => {
+            closeAllLists(e.target);
+        });
+    }
+
+    //自動完成點選後的資料處理
+    const afterAutocomplete = data =>{
+        console.log(data)
+        document.querySelector(".modal.aboutPanel .code").innerHTML = data.code
+        const badge = document.querySelector(".modal.aboutPanel .badge")
+        badge.innerHTML = data.source
+        badge.classList.add(data.source)
+        document.querySelector(".modal.aboutPanel .badge").innerHTML = data.source
     }
 
     // 设置右侧功能栏
@@ -379,7 +467,7 @@
             if (item.state != 0) {
                 caseBtn.addEventListener("click", () => {
                     // 重新加载页面并传递新的 CaseID
-                    window.location.href = `./?CaseID=${item.case}&ProjectID=${ProjectID}`;
+                    window.location.href = `./?CaseID=${item.case}&ProjectID=${ProjectID}${Editor == 1 && "&Editor=1"}`;
                 })
             }
         })
@@ -423,6 +511,9 @@
             })
     }
 
+    const sendDataEdit=()=>{
+    }
+
     // 设置按钮和事件处理程序
     const buttonsSetting = (config) => {
         //下一筆
@@ -452,7 +543,7 @@
                             }
                         }
                     }
-                    window.location.href = `./?CaseID=${_findCase}&ProjectID=${ProjectID}`;
+                    window.location.href = `./?CaseID=${_findCase}&ProjectID=${ProjectID}${Editor == 1 && "&Editor=1"}`;
                 })
                 .catch(error => {
                     console.error(error);
@@ -501,7 +592,34 @@
         document.querySelector(".doSend").addEventListener("click", () => {
             document.querySelector(".modal.sendCheck").classList.add("close");
             sendData();
-        })
+        }/*,{ once: true }*/)
+
+         // 送出修改資料前
+         document.querySelector(".aboutPanel .footer button").addEventListener("click", () => {
+            document.querySelector(".modal.aboutCheck").classList.remove("close");
+        }/*,{ once: true }*/)
+        
+         // 发送数据
+         document.querySelector(".doSendEdit").addEventListener("click", () => {
+            document.querySelector(".modal.aboutCheck").classList.add("close");
+            sendDataEdit();
+        }/*,{ once: true }*/)
+
+
+        const cleanAboutPanel = ()=>{
+            const _b=document.querySelector(".modal.aboutPanel .badge");
+            _b.innerHTML = "";
+            _b.classList.remove(..._b.classList)
+            _b.classList.add("badge");
+            document.querySelector(".modal.aboutPanel .code").innerHTML=""
+            document.querySelector(".modal.aboutPanel .codeName").value=null
+            document.querySelector(".modal.aboutPanel #description").value=null
+        }
+
+        //檢查補充資料是否有填寫完成
+        const checkAboutPanel = ()=>{
+            document.querySelector(".modal.aboutPanel .footer button").classList.remove("disabled")
+        }
 
         //編輯者建立關鍵字按鈕的面板開關
         if (Editor == 1) {
@@ -510,13 +628,13 @@
             fbtn.innerHTML = "補充"
             document.querySelector("#codeCtrl .footer").appendChild(fbtn)
             fbtn.addEventListener("click", () => {
+                cleanAboutPanel()
                 document.querySelector(".modal.aboutPanel").classList.remove("close")
                 document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.add("outline")
                 document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = "選擇文字範圍"
-
+                document.querySelector(".modal.aboutPanel .footer button").classList.add("disabled")
             })
         }
-
 
         //左側的補充按鈕，開啟補充視窗
         const selectTxt = document.querySelector("#myArtical .content .selectTxt")
@@ -526,18 +644,20 @@
         })
 
         //左側文章文字擷取，擷取完後會彈出補充按鈕，點選後開啟補充視窗
-        document.querySelector("#myArtical .content .ENG").addEventListener("mouseup", event => {
-            if (window.getSelection().toString()) {
-                selectTxt.classList.remove("close")
-                selectTxt.style.top = `${event.pageY + 20}px`
-                selectTxt.style.left = `${event.pageX + 20}px`
-                document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.remove("outline")
-                document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = window.getSelection().toString()
-                setTimeout(() => {
-                    selectTxt.classList.add("close")
-                }, 5000);
-            }
-        })
+        if(Editor==1){
+            document.querySelector("#myArtical .content .ENG").addEventListener("mouseup", event => {
+                if (window.getSelection().toString()) {
+                    selectTxt.classList.remove("close")
+                    selectTxt.style.top = `${event.pageY + 20}px`
+                    selectTxt.style.left = `${event.pageX + 20}px`
+                    document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.remove("outline")
+                    document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = window.getSelection().toString()
+                    setTimeout(() => {
+                        selectTxt.classList.add("close")
+                    }, 5000);
+                }
+            })
+        }
 
         //補充視窗內的文字擷取
         document.querySelector(".modal.keyWordPanel .selectKeyWordFromArtical").addEventListener("mouseup", () => {
@@ -575,10 +695,6 @@
             document.querySelector(".modal.aboutPanel").classList.add("close")
             document.querySelector(".modal.keyWordPanel").classList.remove("close")
         })
-
-        
-        const input = document.querySelector(".modal.aboutPanel input.codeName")
-        new Autocomplete(input, './js/getCodeNameList.json');
     }
 
     // 文章语言切换设置
@@ -644,84 +760,22 @@
             if (items.meta && items.meta.code === 200) {
                 renderCodePanel(items);
                 renderTotalRW()
+                return contentLoader("./js/getCodeNameList.json")
             } else {
                 throw new Error("加载病例详细信息失败");
             }
+        }).then(list => {
+
+            //設定補充面板的自動完成的區塊
+            autocomplete(
+                document.querySelector(".modal.aboutPanel input.codeName"),
+                list.codeList,
+                data => { afterAutocomplete(data) }
+            );
+
         }).catch(error => {
             console.error(error);
         })
     })
 })()
 
-class Autocomplete {
-    constructor(input, dataUrl) {
-        this.input = input;
-        this.suggestionsBox = null;
-        this.createSuggestionsBox();
-        this.loadData(dataUrl);
-    }
-
-    createSuggestionsBox() {
-        this.suggestionsBox = document.createElement('div');
-        this.suggestionsBox.className = 'suggestions-box';
-        this.suggestionsBox.style.display = 'none';
-        this.input.parentNode.insertBefore(this.suggestionsBox, this.input.nextSibling);
-    }
-
-    async loadData(url) {
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            console.log(data)
-            this.suggestions = data.codeList.map(item => item.code_name);
-            this.setupEventListeners();
-        } catch (error) {
-            console.error('Error loading data:', error);
-        }
-    }
-
-    setupEventListeners() {
-        let debounceTimer;
-
-        this.input.addEventListener('input', () => { 
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => this.showSuggestions(), 300);
-        });
-
-        this.input.addEventListener('blur', () => {
-            setTimeout(() => this.suggestionsBox.style.display = 'none', 200);
-        });
-    }
-
-    showSuggestions() {
-        const inputValue = this.input.value.toLowerCase();
-        if (inputValue.length < 2) {
-            this.suggestionsBox.style.display = 'none';
-            return;
-        }
-
-        const matches = this.suggestions.filter(item =>
-            item.toLowerCase().includes(inputValue)
-        );
-
-        if (matches.length === 0) {
-            this.suggestionsBox.style.display = 'none';
-            return;
-        }
-
-        this.suggestionsBox.innerHTML = matches
-            .map(item => `<div class="suggestion-item">${item}</div>`)
-            .join('');
-
-        this.suggestionsBox.style.display = 'block';
-
-        // 为每个建议项添加点击事件
-        const items = this.suggestionsBox.getElementsByClassName('suggestion-item');
-        Array.from(items).forEach(item => {
-            item.addEventListener('click', () => {
-                this.input.value = item.textContent;
-                this.suggestionsBox.style.display = 'none';
-            });
-        });
-    }
-}

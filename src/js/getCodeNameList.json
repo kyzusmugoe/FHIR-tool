@@ -5,7 +5,19 @@
         {"code":"a001","code_name":"abctestName","source":"SNOMEDCT_US"},
         {"code":"a001","code_name":"abcdtestName","source":"SNOMEDCT_US"},
         {"code":"b002","code_name":"btestName","source":"LOINC"},
-        {"code":"b002","code_name":"ctestName","source":"RxNorm"},
-        {"code":"b002","code_name":"dtestName","source":"ICD-10"}
+        {"code":"b002","code_name":"1btestName","source":"LOINC"},
+        {"code":"b002","code_name":"2btestName","source":"LOINC"},
+        {"code":"b002","code_name":"3btestName","source":"LOINC"},
+        {"code":"b002","code_name":"4btestName","source":"LOINC"},
+        {"code":"b002","code_name":"ctestName1","source":"RxNorm"},
+        {"code":"b002","code_name":"ctestName2","source":"RxNorm"},
+        {"code":"b002","code_name":"ctestName3","source":"RxNorm"},
+        {"code":"b002","code_name":"ctestName4","source":"RxNorm"},
+        {"code":"b002","code_name":"ctestName5","source":"RxNorm"},
+        {"code":"b002","code_name":"dtest1Name","source":"ICD-10"},
+        {"code":"b002","code_name":"dtest2Name","source":"ICD-10"},
+        {"code":"b002","code_name":"dtest3Name","source":"ICD-10"},
+        {"code":"b002","code_name":"dtest4Name","source":"ICD-10"},
+        {"code":"b002","code_name":"dtest5Name","source":"ICD-10"}
     ]
 }

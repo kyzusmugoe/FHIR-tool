@@ -75,9 +75,11 @@ html
             .modal.sendCheck.close 
                 .box
                     .header
-                        p 確定是否送出
+                        p 
                         button.main.closeBtn X
                     .content
+                        span 確定是否送出
+                    .footer
                         button.main.closeBtn 取消
                         button.main.doSend 確定
 
@@ -139,23 +141,33 @@ html
                                         div.badge
                                     td
                                         span.code
-                                    td
-                                        input.codeName
+                                    td.codeNameBox
+                                        div.autocomplete
+                                            input.codeName
                                     td
                                         button.openkeyWordPanel 
 
                         textarea#description(placeholder="備註")
                     .footer
                         button.main.closeBtn 送出修改
+
+            .modal.aboutCheck.close 
+                .box
+                    .header
+                        button.main.closeBtn X
+                    .content
+                        p 確定是否送出修改資料
+                    .footer
+                        button.main.closeBtn 取消
+                        button.main.doSendEdit 確定
         
             
             .modal.keyWordPanel.close 
-                    .box
-                        .header
-                            p 選擇文字範圍
-                            button.main.closeBtn X
-                        .content
-                            .selectKeyWordFromArtical
-                        .footer.center
-                            button.main.disabled.closeBtn 確認範圍
-            input(type="text" id="codeNameInput" placeholder="请输入代码名称...")
+                .box
+                    .header
+                        p 選擇文字範圍
+                        button.main.closeBtn X
+                    .content
+                        .selectKeyWordFromArtical
+                    .footer.center
+                        button.main.disabled.closeBtn 確認範圍
