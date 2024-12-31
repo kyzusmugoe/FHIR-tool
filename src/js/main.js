@@ -80,8 +80,14 @@
         document.querySelector(".nav  span.wrong").innerHTML = wrong
     }
 
+    //檢查補充資料是否可以送出
     const checkAboutPanel = ()=>{
-        document.querySelector(".modal.aboutPanel .footer button").classList.remove("disabled")
+        console.log(editData)
+        if(editData.span_txt !=null &&  editData.code !=null &&  editData.code_name !=null &&  editData.source !=null ){
+            document.querySelector(".modal.aboutPanel .footer button").classList.remove("disabled")
+        }else{
+            document.querySelector(".modal.aboutPanel .footer button").classList.add("disabled")
+        }
     }
 
     //設定自動完成欄位
@@ -160,12 +166,13 @@
 
     //自動完成點選後的資料處理
     const afterAutocomplete = data =>{
-        console.log(data)
+        editData = {...editData, ...data}
         document.querySelector(".modal.aboutPanel .code").innerHTML = data.code
         const badge = document.querySelector(".modal.aboutPanel .badge")
         badge.innerHTML = data.source
         badge.classList.add(data.source)
         document.querySelector(".modal.aboutPanel .badge").innerHTML = data.source
+        checkAboutPanel()
     }
 
     // 设置右侧功能栏
@@ -231,8 +238,10 @@
                     panel.querySelector(".code").innerHTML = row.code
                     panel.querySelector(".codeName").value = row.code_name
                     panel.querySelector(".openkeyWordPanel").innerHTML = row.span_txt
+                    editData = {...editData, ...row}
+                    checkAboutPanel()
                     //panel.querySelector(".confidence").innerHTML = row.confidence
-                    console.log(row)
+                    //console.log(row)
                 })
                 return btn
             }
@@ -269,10 +278,8 @@
                 tr.appendChild(td);
                 // 其他列
                 for (let key in item) {
-
                     const td = document.createElement("td");
                     td.classList.add(key);
-
                     switch (key) {
                         case "span_txt":
                             const box = document.createElement("div");
@@ -512,6 +519,10 @@
     }
 
     const sendDataEdit=()=>{
+        const desciprtion = document.querySelector(".aboutPanel #description").innerHTML
+        const sendData={...editData, desciprtion}//加上備註資料在送出
+        console.log(sendData)
+        alert("模擬送出")
     }
 
     // 设置按钮和事件处理程序
@@ -614,11 +625,7 @@
             document.querySelector(".modal.aboutPanel .code").innerHTML=""
             document.querySelector(".modal.aboutPanel .codeName").value=null
             document.querySelector(".modal.aboutPanel #description").value=null
-        }
-
-        //檢查補充資料是否有填寫完成
-        const checkAboutPanel = ()=>{
-            document.querySelector(".modal.aboutPanel .footer button").classList.remove("disabled")
+            editData = {}
         }
 
         //編輯者建立關鍵字按鈕的面板開關
@@ -641,6 +648,7 @@
         selectTxt.addEventListener("click", () => {
             document.querySelector(".modal.aboutPanel").classList.remove("close")
             selectTxt.classList.add("close")
+            checkAboutPanel()
         })
 
         //左側文章文字擷取，擷取完後會彈出補充按鈕，點選後開啟補充視窗
@@ -652,6 +660,7 @@
                     selectTxt.style.left = `${event.pageX + 20}px`
                     document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.remove("outline")
                     document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = window.getSelection().toString()
+                    editData.span_txt = window.getSelection().toString()
                     setTimeout(() => {
                         selectTxt.classList.add("close")
                     }, 5000);
@@ -667,13 +676,14 @@
                 confirmBtn.classList.remove("disabled")
                 document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.remove("outline")
                 document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = window.getSelection().toString()
+                editData.span_txt = window.getSelection().toString()
             }
         })
 
         //補充文字確認送出
         document.querySelector(".modal.keyWordPanel .footer button").addEventListener("click", () => {
             document.querySelector(".modal.aboutPanel").classList.remove("close")
-
+            checkAboutPanel()
         })
 
         //建立右下方完成按鈕 點下後會等同於點選tab中的下一個選項 最後一個會循環
@@ -770,7 +780,9 @@
             autocomplete(
                 document.querySelector(".modal.aboutPanel input.codeName"),
                 list.codeList,
-                data => { afterAutocomplete(data) }
+                data => { 
+                    afterAutocomplete(data)
+                }
             );
 
         }).catch(error => {
