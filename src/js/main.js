@@ -123,9 +123,10 @@
         });
 
         inp.addEventListener("keydown", e => {
-            let x = document.getElementById(this.id + "autocomplete-list");
+            //let x = document.getElementById(this.id + "autocomplete-list");
+            let x = document.querySelector("#autocomplete-list")
             if (x) x = x.getElementsByTagName("div");
-            if (e.keyCode == 40) {
+            if (e.keyCode == 40 || e.keyCode == 9) {
                 currentFocus++;
                 addActive(x);
             } else if (e.keyCode == 38) {
@@ -139,6 +140,7 @@
                 }
             }
         });
+
         const addActive = x => {
             if (!x) return false;
             removeActive(x);
@@ -146,6 +148,7 @@
             if (currentFocus < 0) currentFocus = (x.length - 1);
             x[currentFocus].classList.add("autocomplete-active");
         }
+        
         const removeActive = x => {
             for (let i = 0; i < x.length; i++) {
                 x[i].classList.remove("autocomplete-active");
