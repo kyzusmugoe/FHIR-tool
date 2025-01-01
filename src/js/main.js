@@ -41,12 +41,14 @@
 
     // 通过 API 请求加载数据
     const contentLoader = (path, params) => {
+        console.log(path, params) 
         return new Promise((resolve, reject) => {
             fetch(path, {
-                //method: 'POST',
                 method: 'GET',
+                //method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'skip_zrok_interstitial': true
                     // 如果需要其他头信息，可以在这里添加
                 },
                 //body: JSON.stringify(params)
@@ -123,10 +125,9 @@
         });
 
         inp.addEventListener("keydown", e => {
-            //let x = document.getElementById(this.id + "autocomplete-list");
-            let x = document.querySelector("#autocomplete-list")
+            let x = document.getElementById(this.id + "autocomplete-list");
             if (x) x = x.getElementsByTagName("div");
-            if (e.keyCode == 40 || e.keyCode == 9) {
+            if (e.keyCode == 40) {
                 currentFocus++;
                 addActive(x);
             } else if (e.keyCode == 38) {
@@ -140,7 +141,6 @@
                 }
             }
         });
-
         const addActive = x => {
             if (!x) return false;
             removeActive(x);
@@ -148,7 +148,6 @@
             if (currentFocus < 0) currentFocus = (x.length - 1);
             x[currentFocus].classList.add("autocomplete-active");
         }
-        
         const removeActive = x => {
             for (let i = 0; i < x.length; i++) {
                 x[i].classList.remove("autocomplete-active");
@@ -237,14 +236,14 @@
                     badge.classList.remove(...badge.classList)
                     badge.classList.add("badge", row.source)
                     panel.classList.remove("close")
+                    panel.querySelector(".title").innerHTML = "修改"
+                    panel.querySelector(".footer .closeBtn").innerHTML = "送出修改"
                     panel.querySelector(".badge").innerHTML = row.source
                     panel.querySelector(".code").innerHTML = row.code
                     panel.querySelector(".codeName").value = row.code_name
                     panel.querySelector(".openkeyWordPanel").innerHTML = row.span_txt
                     editData = {...editData, ...row}
                     checkAboutPanel()
-                    //panel.querySelector(".confidence").innerHTML = row.confidence
-                    //console.log(row)
                 })
                 return btn
             }
@@ -365,8 +364,6 @@
                             }
                             break;
                     }
-
-
                 }
                 box.appendChild(tr)
             });
@@ -638,8 +635,10 @@
             fbtn.innerHTML = "補充"
             document.querySelector("#codeCtrl .footer").appendChild(fbtn)
             fbtn.addEventListener("click", () => {
-                cleanAboutPanel()
+                cleanAboutPanel() 
                 document.querySelector(".modal.aboutPanel").classList.remove("close")
+                document.querySelector(".modal.aboutPanel .title").innerHTML = "補充"
+                document.querySelector(".modal.aboutPanel .footer .closeBtn").innerHTML = "新增補充"
                 document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.add("outline")
                 document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = "選擇文字範圍"
                 document.querySelector(".modal.aboutPanel .footer button").classList.add("disabled")
@@ -649,6 +648,8 @@
         //左側的補充按鈕，開啟補充視窗
         const selectTxt = document.querySelector("#myArtical .content .selectTxt")
         selectTxt.addEventListener("click", () => {
+            document.querySelector(".modal.aboutPanel .title").innerHTML = "補充"
+            document.querySelector(".modal.aboutPanel .footer .closeBtn").innerHTML = "新增補充"
             document.querySelector(".modal.aboutPanel").classList.remove("close")
             selectTxt.classList.add("close")
             checkAboutPanel()
@@ -708,6 +709,14 @@
             document.querySelector(".modal.aboutPanel").classList.add("close")
             document.querySelector(".modal.keyWordPanel").classList.remove("close")
         })
+
+        if(Editor ==1){
+            document.querySelector("header .modeBtn").addEventListener("click", () => {
+                window.open(`./?CaseID=${CaseID}&ProjectID=${ProjectID}`,"_self")
+            })
+        }else{
+            document.querySelector("header .modeBtn").style.display = "none"
+        }
     }
 
     // 文章语言切换设置
@@ -752,9 +761,7 @@
             )
         }).then(artical => {
             if (artical.meta && artical.meta.code === 200) {
-
                 document.querySelector(".selectKeyWordFromArtical").innerHTML = artical.paragraphs.map(p => p.eng).join('<br><br>');
-
                 //選取範圍
                 changeArticalLang(artical);
                 // 获取病例详细信息

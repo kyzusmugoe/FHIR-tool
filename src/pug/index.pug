@@ -22,16 +22,20 @@ html
 
             .nav 
                 div
-                    button.main.caselist 選擇病例
+                    button.main.caselist 
+                        i.fa-solid.fa-address-card
+                        span 選擇病例
                     span Case:
                         span.caseID
                     button.outline.nextCase 下一筆
                 div
-                    span 正確 
+                    span 正確
                         span.right 0
                     span 錯誤
                         span.wrong 0
-                    button.main.send 完成送出
+                    button.main.send 
+                        i.fa-solid.fa-check
+                        span 完成送出
 
             .panelContainer
                 #myArtical
@@ -47,7 +51,7 @@ html
                 #codeCtrl
                     .headerBox
                         .tabs
-                        select(name="") 
+                        select#selectItems(name="selectItems") 
                             option System labeling 
                     .content
                         table
@@ -78,13 +82,18 @@ html
             .modal.sendCheck.close 
                 .box
                     .header
-                        
+                        span 確定是否送出 修改/補充 資料
                         button.main.closeBtn X
                     .content
-                        span 確定是否送出
+                      
+                        span 註解XXXX，送出後無法於本平台刪除，請謹慎操作
                     .footer
-                        button.main.closeBtn 取消
-                        button.main.doSend 確定
+                        button.main.closeBtn 
+                            i.fa-solid.fa-xmark 
+                            span 取消
+                        button.main.doSend 
+                            i.fa-solid.fa-check 
+                            span 確定
 
             //--
                 .modal.fixPanel.close 
@@ -127,7 +136,7 @@ html
             .modal.aboutPanel.close 
                 .box
                     .header
-                        span 補充
+                        span.title 
                         button.main.closeBtn X
                     .content
                         table
@@ -159,10 +168,16 @@ html
                     .header
                         button.main.closeBtn X
                     .content
-                        p 確定是否送出修改資料
+                        div
+                            span.notice 確定是否送出 修改/補充 資料
+                            span 註解XXXX，送出後無法於本平台刪除，請謹慎操作
                     .footer
-                        button.main.closeBtn 取消
-                        button.main.doSendEdit 確定
+                        button.main.closeBtn 
+                            i.fa-solid.fa-xmark 
+                            span 取消
+                        button.main.doSendEdit
+                            i.fa-solid.fa-check 
+                            span 確定
         
             
             .modal.keyWordPanel.close 

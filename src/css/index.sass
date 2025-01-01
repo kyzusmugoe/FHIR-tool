@@ -19,9 +19,6 @@ $imgPath:"../img/"
     $lonic: #0098F0
 
 
-
-
-
 @mixin flexBox($row, $col)
     display: flex
     justify-content: $row
@@ -77,12 +74,28 @@ body
         width: 100%
         display: flex
         justify-content: space-between
+        padding-bottom: 20px
+        .modeBtn
+            border: 1px solid white
+            margin-left: 10px 15px
+            border-radius: 10px
+            margin-left: 30px
     .nav
         color: white
         display: flex
         justify-content: space-between
         align-items: center
-        padding:10px 0
+        padding-bottom: 20px
+        > div
+            display: flex
+            align-items: center
+
+            text-overflow: ellipsis
+            font-family: "Noto Sans TC"
+            font-size: 16px
+            font-style: normal
+            font-weight: 700
+            line-height: 20px
         
         span
             margin: 0 5px
@@ -90,6 +103,29 @@ body
             
             border: 1px solid #fff
             padding: 10px 15px
+
+        button.caselist
+            width: 120px
+            display: flex
+            align-items: center
+            justify-content: space-between
+
+        button.send
+            width: 120px
+            display: flex
+            align-items: center
+            justify-content: space-between
+            i
+                font-size: 12px
+                background-color: #fff
+                color: #1855BE
+                width: 15px
+                height: 15px
+                border-radius: 50%
+                display: flex
+                justify-content: center
+                align-items: center
+                            
                 
        
             
@@ -157,54 +193,82 @@ body
                 &::before, &::after
                     position: absolute
                     content: " "
-                    top: 8px
+                    top: 18px
                 &::before 
                     border-width: 6px
-                    right: 2px
+                    right: 6px
                     border-style: solid
-                    border-color:#666 transparent transparent  transparent
+                    border-color:#1855BE transparent transparent  transparent
                 &::after
-                    right: 4px
+                    right: 8px
                     border-width: 4px
                     border-style: solid
                     border-color:#fff transparent transparent  transparent
                 &.close::before
                     transform: rotate(180deg)
-                    top: 2px
+                    top: 12px
                 &.close::after
-                    top: 6px
+                    top: 16px
                     transform: rotate(180deg)
             .headerBox
                 display: flex
                 justify-content: space-between
-
+                border-bottom: 1px solid config.$lineColor 
                 .tabs
-                    border-bottom: 1px solid config.$lineColor 
-                    
+                   
 
                     button
+                        white-space: nowrap
+                        width: 120px
+
                         font-size: 14px
                         font-weight: 700
                         background: none 
                         border: none 
                         background-color: #AEAFB0
                         color: #fff
+                        border-radius: 0
                         border-top-left-radius: 10px
                         border-top-right-radius: 10px
                         padding: 10px
                         margin: 0 5px
                         transition: .4s
+                        font-style: normal
+                        font-weight: 600
+                        line-height: normal
+
                         &.high
                             @include config.typesBG()
                 select
                     width: 160px
-                    height: 34px
+                    height: 30px
                     background: none
-                    border-radius:0
-                    border: 1px solid #1855be
-                    appearance: none
-                    padding: 8px
+                    border-radius: 4px
+                    border: 1px solid #1855BE
+                    //appearance: none
+                    padding: 3px 8px
                     color: #1855be
+                    font-family: "Noto Sans TC"
+                    font-size: 14px
+                    font-style: normal
+                    font-weight: 700
+                    line-height: 20px
+                    position: relative
+                    &::before, &::after
+                        position: absolute
+                        content: " a"
+                        top: 18px
+                    &::before 
+                        border-width: 6px
+                        right: 6px
+                        border-style: solid
+                        border-color:#1855BE transparent transparent  transparent
+                    &::after
+                        right: 8px
+                        border-width: 4px
+                        border-style: solid
+                        border-color:#fff transparent transparent  transparent
+
                     option
                         color: #1855be
             .content
@@ -215,7 +279,12 @@ body
                     border-collapse: collapse
                     th
                         text-align: left
+                        height: 40px
+                        color: #333
                         font-size: 14px
+                        font-style: normal
+                        font-weight: 600
+                        line-height: normal
                     
                     #codeRow
                         tr
@@ -232,7 +301,12 @@ body
                             td
                                 vertical-align: top
                                 padding: 5px
-                                
+                                color: #333
+                                font-size: 14px
+                                font-style: normal
+                                font-weight: 500
+                                line-height: normal
+                                                                
                                 &.high
                                     @include config.typesBG()
                                 .badge
@@ -264,13 +338,16 @@ body
                                     text-align: center
                                     max-width: 120px
                                 &:nth-child(3)
-                                    text-align: center
+                                    text-align: left
                                     min-width: 80px
+                                &:nth-child(6)
+                                    text-align: center
                         
             .footer
                 display: flex
                 justify-content: flex-end
                 button
+                    border-radius: 4px
                     @include config.typesBG()
                     &.fill
                         margin-right: 10px

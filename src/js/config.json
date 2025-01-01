@@ -1,4 +1,4 @@
 {
     "readme":"目前只有定義API的路徑，如果有需要拉到這邊定義成參數的地方在跟我說一下",
-    "API_PATH":"http://localhost:3000/"
+    "API_PATH":"https://localhost:11291/"
 }
