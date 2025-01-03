@@ -48,6 +48,7 @@ html
                         .ENG
                         .CHT.close
                         .selectTxt.close 補充
+                        .noticeTxt.close 您的選取範圍涵蓋關鍵字標籤，請重新確認選取範圍"
                 #codeCtrl
                     .headerBox
                         .tabs
@@ -146,7 +147,6 @@ html
                                     th Code
                                     th Code Name
                                     th Association
-                                   
                             tbody 
                                 tr
                                     td 
@@ -178,14 +178,27 @@ html
                         button.main.doSendEdit
                             i.fa-solid.fa-check 
                             span 確定
-        
             
             .modal.keyWordPanel.close 
                 .box
                     .header
-                        p 選擇文字範圍
+                        span 選擇文字範圍
                         button.main.closeBtn X
                     .content
                         .selectKeyWordFromArtical
                     .footer.center
                         button.main.disabled.closeBtn 確認範圍
+
+            .modal.message.close 
+                .box
+                    .header
+                        span.title
+                        button.main.closeBtn X
+                    .content
+                    .footer.center
+                        button.main.closeBtn 
+                            i.fa-solid.fa-xmark 
+                            span 取消
+                        button.main.doSendEdit
+                            i.fa-solid.fa-check 
+                            span 確定

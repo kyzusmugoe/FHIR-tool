@@ -92,6 +92,21 @@
         }
     }
 
+    //20250103 偵測選取範圍是否有span
+    const detectTxtScope = ()=> {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        const container = document.createElement('div');
+        container.appendChild(range.cloneContents());
+        if (container.querySelector('span')) {
+            alert('您的選取範圍涵蓋關鍵字標籤，請重新確認選取範圍');
+            return false
+        }else{
+            return true
+        }
+
+    }
+
     //設定自動完成欄位
     const autocomplete = (inp, arr, action) => {
         let currentFocus;
@@ -244,6 +259,24 @@
                     panel.querySelector(".openkeyWordPanel").innerHTML = row.span_txt
                     editData = {...editData, ...row}
                     checkAboutPanel()
+
+                    //20250103 複製eng的內容並移除指定標籤
+                    let _artical =  document.querySelector("#myArtical .content .ENG").cloneNode(true);
+                    _artical.querySelectorAll("span").forEach(item=>{
+                        if(item.innerHTML == row.span_txt){
+                            const textNode = document.createTextNode(row.span_txt);
+                            _artical.replaceChild(textNode, item);
+                        }
+                    })
+                    document.querySelector(".selectKeyWordFromArtical").innerHTML =_artical.innerHTML
+                    document.querySelectorAll(".selectKeyWordFromArtical span").forEach(item=>{
+                        item.addEventListener("mouseup",event=>{
+                            const notice = document.querySelector(".noticeTxt")
+                            notice.classList.remove("close")
+                            notice.style.top = `${event.pageY + 20}px`
+                            notice.style.left = `${event.pageX + 20}px`
+                        })
+                    })
                 })
                 return btn
             }
@@ -390,6 +423,9 @@
             let reg = new RegExp(item.span_txt, 'gi');
             if (artical.match(reg)) {
                 content.innerHTML = artical.replace(reg, `<span class="mark ${item.source} code${item.code} close ">${item.span_txt}</span>`);
+                content.querySelectorAll(`span.mark`).forEach(item => {
+                    item.addEventListener("mouseup",()=>{alert("您的選取範圍涵蓋關鍵字標籤，請重新確認選取範圍")})
+                })
             }
         })
 
@@ -446,6 +482,8 @@
                 for (key in dataPool) { dataPool[key].map(item => { item.eye = 1 }) }
             }
         })
+
+        
     }
 
     // 渲染病例列表
@@ -658,7 +696,9 @@
         //左側文章文字擷取，擷取完後會彈出補充按鈕，點選後開啟補充視窗
         if(Editor==1){
             document.querySelector("#myArtical .content .ENG").addEventListener("mouseup", event => {
-                if (window.getSelection().toString()) {
+                if ( detectTxtScope()) {
+                   
+                    window.getSelection().toString()
                     selectTxt.classList.remove("close")
                     selectTxt.style.top = `${event.pageY + 20}px`
                     selectTxt.style.left = `${event.pageX + 20}px`
@@ -668,27 +708,32 @@
                     setTimeout(() => {
                         selectTxt.classList.add("close")
                     }, 5000);
+                }else{
+                    selectTxt.classList.add("close")
                 }
             })
+       
+
+            //補充視窗內的文字擷取
+            document.querySelector(".modal.keyWordPanel .selectKeyWordFromArtical").addEventListener("mouseup", () => {
+                const confirmBtn = document.querySelector(".modal.keyWordPanel .footer button")
+                confirmBtn.classList.add("disabled")
+                detectTxtScope()
+                if (window.getSelection().toString()) {
+                    confirmBtn.classList.remove("disabled")
+                    document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.remove("outline")
+                    document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = window.getSelection().toString()
+                    editData.span_txt = window.getSelection().toString()
+                }
+            })
+        
+            //補充文字確認送出
+            document.querySelector(".modal.keyWordPanel .footer button").addEventListener("click", () => {
+                document.querySelector(".modal.aboutPanel").classList.remove("close")
+                checkAboutPanel()
+            })
+
         }
-
-        //補充視窗內的文字擷取
-        document.querySelector(".modal.keyWordPanel .selectKeyWordFromArtical").addEventListener("mouseup", () => {
-            const confirmBtn = document.querySelector(".modal.keyWordPanel .footer button")
-            confirmBtn.classList.add("disabled")
-            if (window.getSelection().toString()) {
-                confirmBtn.classList.remove("disabled")
-                document.querySelector(".modal.aboutPanel .openkeyWordPanel").classList.remove("outline")
-                document.querySelector(".modal.aboutPanel .openkeyWordPanel").innerHTML = window.getSelection().toString()
-                editData.span_txt = window.getSelection().toString()
-            }
-        })
-
-        //補充文字確認送出
-        document.querySelector(".modal.keyWordPanel .footer button").addEventListener("click", () => {
-            document.querySelector(".modal.aboutPanel").classList.remove("close")
-            checkAboutPanel()
-        })
 
         //建立右下方完成按鈕 點下後會等同於點選tab中的下一個選項 最後一個會循環
         const cbtn = document.createElement("button")
@@ -749,7 +794,7 @@
         // 加载配置文件
         loadConfig().then(res => {
             config = res;
-            buttonsSetting(config);
+            
             // 获取病例内容
             return contentLoader("./js/GetCaseContent.json")//測試用
             return contentLoader(
@@ -761,9 +806,11 @@
             )
         }).then(artical => {
             if (artical.meta && artical.meta.code === 200) {
-                document.querySelector(".selectKeyWordFromArtical").innerHTML = artical.paragraphs.map(p => p.eng).join('<br><br>');
+                //document.querySelector(".selectKeyWordFromArtical").innerHTML = artical.paragraphs.map(p => p.eng).join('<br><br>');
                 //選取範圍
                 changeArticalLang(artical);
+
+                buttonsSetting(config);
                 // 获取病例详细信息
                 return contentLoader("./js/GetCaseDetail.json")//測試用
                 return contentLoader(
